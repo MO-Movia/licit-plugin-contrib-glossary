@@ -29,7 +29,7 @@
 }
 
 .czi-editor-frameset .glossary {
-  cursor: pointer;
+  cursor: auto;
   display: inline-block;
   line-height: 10px;
   position: relative;
@@ -49,7 +49,7 @@
 
 .czi-editor-frameset .molcit-citationrow.hover {
   background-color: gray;
-  cursor: pointer;
+  cursor: auto;
 }
 
 .czi-editor-frameset .molcit-citationrow.selected {
@@ -99,18 +99,6 @@
 }
 
 .czi-editor-frameset .molcit-glossary-tooltip {
-  /* background: transparent !important;
-  border: 2px solid #e8b415;
-  cursor: auto;
-  left: 15px;
-  line-height: normal;
-  margin: auto;
-  max-width: max-content;
-  position: absolute;
-  text-align: left;
-  top: calc(10%);
-  width: 400px;
-  z-index: 9999; */
   background: transparent !important;
   border-radius: 2px;
   box-sizing: border-box;
