@@ -20,7 +20,9 @@ export type Glossary = {
   id: string;
   term: string;
   description: string;
-  from:string;
-  to:string;
-  type:string;
+};
+
+export type EditorRuntime = {
+  getAcronyms?: (abbreviation: string) => Promise<Glossary[]>,
+  getGlossary?: (term: string) => Promise<Glossary[]>,
 };

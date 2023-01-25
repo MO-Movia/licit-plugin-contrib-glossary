@@ -7,20 +7,22 @@ import GlossaryListUI from './GlossaryListUI';
 import { createPopUp } from '@modusoperandi/licit-ui-commands';
 import type { PopUpHandle } from '@modusoperandi/licit-ui-commands';
 import { Fragment } from 'prosemirror-model';
-import GlossaryRuntime from './glossaryRuntime';
+import { EditorRuntime } from './types';
 
 
 export class GlossaryCommand extends UICommand {
   _popUp: PopUpHandle | null = null;
   _alertPopup: PopUpHandle | null = null;
   _isGlossary = true;
+  runtime: EditorRuntime;
 
   constructor(isGlossary?: boolean) {
     super();
     this._isGlossary = isGlossary;
   }
-  isEnabled = (state: EditorState): boolean => {
-    return this._isEnabled(state);
+
+  isEnabled = (state: EditorState, view: EditorView): boolean => {
+    return this._isEnabled(state, view);
   };
 
   getSelectedText(editorView: EditorView) {
@@ -34,26 +36,6 @@ export class GlossaryCommand extends UICommand {
     return selectedText;
   }
 
-  getGlossaryObject(term: string): number {
-    let glossaryObj = null;
-    const runtime = new GlossaryRuntime();
-    if (this._isGlossary && typeof runtime.getGlossary(term) === 'function') {
-      runtime.getGlossary(term).then((result) => {
-        if (result.length === 1) {
-          glossaryObj = result;
-        }
-      });
-    }
-    else if (!this._isGlossary && typeof runtime.getAcronyms(term) === 'function') {
-      runtime.getAcronyms(term).then((result) => {
-        if (result.length === 1) {
-          glossaryObj = result;
-        }
-      });
-    }
-    return glossaryObj;
-  }
-
   createGlossaryObject(
     editorView: EditorView
   ) {
@@ -63,21 +45,16 @@ export class GlossaryCommand extends UICommand {
       term: editorView.state.selection.empty ? '' : editorView.state.doc.cut(editorView.state.selection.from, editorView.state.selection.to).textContent.trim(),
       mode: 1, //0 = new , 1- modify, 2- delete
       editorView: editorView,
+      runtime: this.runtime
     };
   }
+
   waitForUserInput = (
     _state: EditorState,
     _dispatch?: (tr: Transform) => void,
     view?: EditorView,
     _event?: React.SyntheticEvent
   ): Promise<unknown> => {
-    // let glossary = this.getGlossaryObject(view.state.doc.cut(view.state.selection.from, view.state.selection.to).textContent);
-    // if (null !== glossary) {
-    //   const transaction = this.createGlossaryNode(_state, glossary);
-    //   _dispatch(transaction);
-
-    //   return Promise.resolve(undefined);
-    // }
     if (this._popUp) {
       return Promise.resolve(undefined);
     }
@@ -154,11 +131,19 @@ export class GlossaryCommand extends UICommand {
     newattrs['type'] = this._isGlossary ? 1 : 2;
     const selection = state.doc.cut(state.selection.from, state.selection.to);
     const node = state.schema.nodes.glossary.create(newattrs, selection);
-    const transaction = state.tr.replaceSelectionWith(node);
-    return transaction;
+    return state.tr.replaceSelectionWith(node);
   }
 
-  _isEnabled = (state: EditorState): boolean => {
+  _isEnabled = (state: EditorState, view: EditorView): boolean => {
+    if (!view) {
+      return false;
+    }
+
+    this.runtime = view['runtime'];
+    if (!this.runtime) {
+      return false;
+    }
+
     const tr = state.tr;
     const { selection } = tr;
     if (

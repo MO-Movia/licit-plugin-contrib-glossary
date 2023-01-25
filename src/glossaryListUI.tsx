@@ -1,25 +1,28 @@
 // [FS] IRAD-1251 2021-03-10
 // UI for Citation dialog
-import *  as React from 'react';
-import GlossaryRuntime from './glossaryRuntime';
+import * as React from 'react';
+import {EditorRuntime, Glossary} from './types';
 import './ui/glossary.css';
 
 type GlossaryListProps = {
-  glossaries;
-  glosarryObject;
+  glossaries: Glossary[];
+  glosarryObject: Glossary;
   selectedRowRefID: string;
   isGlossary: boolean;
   term: string;
   close: (val?) => void;
+  runtime: EditorRuntime;
 };
-let glosarryObject = {};
+let glosarryObject: Glossary;
 let selectedRowRefID = '';
-let glossaries = [];
+let glossaries: Glossary[] = [];
 
-class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryListProps> {
+class GlossaryListUI extends React.PureComponent<
+  GlossaryListProps,
+  GlossaryListProps
+> {
   _unmounted = false;
   _popUp = null;
-
 
   constructor(props: GlossaryListProps) {
     super(props);
@@ -31,40 +34,35 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
   }
 
   getGlossary(): void {
-    const runtime = new GlossaryRuntime();
-    if (this.state.isGlossary && typeof runtime.getGlossary(this.state.term) === 'function') {
+    const runtime = this.props.runtime;
+    if (this.state.isGlossary && typeof runtime.getGlossary === 'function') {
       runtime.getGlossary(this.state.term).then((result) => {
-        if (result) {
-          glossaries = [];
-          result.forEach((obj) => {
-            glossaries.push({
-              id: obj.id,
-              term: obj.term,
-              description: obj.description,
-            });
-          });
-          this.setState({
-            glossaries: glossaries,
-          });
-        }
+        this.updateState(result);
+      });
+    } else if (
+      !this.state.isGlossary &&
+      typeof runtime.getAcronyms === 'function'
+    ) {
+      runtime.getAcronyms(this.state.term).then((result) => {
+        this.updateState(result);
       });
     }
-    else if (!this.state.isGlossary && typeof runtime.getAcronyms(this.state.term) === 'function') {
-      runtime.getAcronyms(this.state.term).then((result) => {
-        if (result) {
-          glossaries = [];
-          result.forEach((obj) => {
-            glossaries.push({
-              id: obj.id,
-              term: obj.term,
-              description: obj.description,
-            });
-          });
-          this.setState({
-            glossaries: glossaries,
-          });
-        }
+  }
+
+  updateState(result: Glossary[]) {
+    if (result) {
+      glossaries = [];
+      result.forEach((obj) => {
+        glossaries.push({
+          id: obj.id,
+          term: obj.term,
+          description: obj.description,
+        });
       });
+      this.setState({
+        glossaries: glossaries,
+      });
+      this.setTermValue();
     }
   }
 
@@ -73,15 +71,7 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
   }
 
   componentDidMount(): void {
-
-    // this.getGlossary();
-    glossaries = [{ id: '1', term: 'SFI', description: 'Students Federation of India' }, { id: '2', term: 'IT', description: 'Information Technology' }
-      , { id: '3', term: 'CAS', description: 'Close Air Support' }, { id: '4', term: 'CAS', description: 'Continuous Aerial Surveillance' }];
-    this.setState({
-      glossaries: glossaries,
-    });
-
-    this.setTermValue();
+    this.getGlossary();
   }
 
   render(): React.ReactNode {
@@ -94,13 +84,13 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
           boxShadow: '1px 1px',
         }}
       >
-        <form className="czi-form" style={{ height: '272px' }}>
+        <form className="czi-form" style={{height: '272px'}}>
           <div>
             <div className="molcit-div-display">
               <label
                 className="molcit-citation-label"
                 key="lbldocTitle"
-                style={{ display: 'block', marginLeft: '2px' }}
+                style={{display: 'block', marginLeft: '2px'}}
               >
                 {labelValue}
               </label>
@@ -110,17 +100,15 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
                 id="termtxt"
                 key="txtdocTitle"
                 onChange={this.onSearchGlossary.bind(this)}
-                style={{ height: '20px', width: '170px' }}
+                style={{height: '20px', width: '170px'}}
                 type="text"
-              // value={term}
               />
             </div>
-
 
             <div></div>
             <div className="molcit-searchdiv">
               <table className="molcit-tablecitations" id="myTable">
-                <thead style={{ backgroundColor: 'lightgray' }}>
+                <thead style={{backgroundColor: 'lightgray'}}>
                   <tr className="molcit-citationrow">
                     <th className="molcit-citationsheader"> {labelValue}</th>
                     <th className="molcit-citationsheader">Description</th>
@@ -139,7 +127,6 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
                     >
                       <td>{item.term}</td>
                       <td>{item.description}</td>
-
                     </tr>
                   ))}
                 </tbody>
@@ -156,13 +143,13 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
               <button
                 key="btnOk"
                 onClick={this._save.bind(this)}
-                style={{ display: 'none', height: '27px', width: '60px' }}
+                style={{display: 'none', height: '27px', width: '60px'}}
               >
                 OK
               </button>
             </div>
           </div>
-          <div style={{ marginTop: '6px' }}>
+          <div style={{marginTop: '6px'}}>
             <button
               key="btnCancel"
               onClick={this._cancel}
@@ -179,7 +166,13 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
               className="btnsave"
               key="btnOk1"
               onClick={this._save.bind(this)}
-              style={{ height: '27px', float: 'right', width: '60px' }}
+              style={{
+                height: '27px',
+                float: 'right',
+                width: '60px',
+                marginTop: '1px',
+                marginRight: '5px',
+              }}
             >
               OK
             </button>
@@ -196,7 +189,7 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
         (u) => u.id === selectedRowRefID
       );
 
-      this.setState({ selectedRowRefID, glosarryObject });
+      this.setState({selectedRowRefID, glosarryObject});
     }
   }
 
@@ -213,20 +206,19 @@ class GlossaryListUI extends React.PureComponent<GlossaryListProps, GlossaryList
     const authorEle = document.getElementById('termtxt');
     const term = authorEle instanceof HTMLInputElement ? authorEle.value : '';
 
-    filteredGlossary = filteredGlossary.filter(val => val.term.toUpperCase().includes(term.toUpperCase()));
-
-    // filteredGlossary = filteredGlossary.filter(function (item) {
-    //   if (
-    //     (item.term === undefined ||
-    //       item.term.toUpperCase().indexOf(value.toUpperCase()) === -1)
-    //   ) {
-    //     return false;
-    //   }
-    //   return true;
-    // });
+    filteredGlossary = filteredGlossary.filter((val) => {
+      const found = val.term.toUpperCase().includes(term.toUpperCase());
+      if (found) {
+        selectedRowRefID = val.id;
+        glosarryObject = val;
+      }
+      return found;
+    });
     this.setState({
       term: term,
       glossaries: filteredGlossary,
+      selectedRowRefID,
+      glosarryObject,
     });
   }
 
