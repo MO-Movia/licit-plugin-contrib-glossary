@@ -1,7 +1,12 @@
 import { DOMSerializer, Node } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
-import { PopUpHandle } from '@modusoperandi/licit-ui-commands';
+import { createPopUp, PopUpHandle, atAnchorTopCenter } from '@modusoperandi/licit-ui-commands';
 import './ui/glossary.css';
+import { Transaction } from 'prosemirror-state';
+import { Transform } from 'prosemirror-transform';
+import GlossarySubMenu from './glossarySubMenu';
+import GlossaryListUI from './GlossaryListUI';
+import { EditorRuntime } from './types';
 
 type CBFn = () => void;
 const GLOSSARY = 'glossary';
@@ -21,13 +26,15 @@ class GlossaryView {
   _popUp_subMenu: PopUpHandle | null = null;
   dom: globalThis.Node = null;
   offsetLeft: Element;
+  runtime: EditorRuntime;
   constructor(node: Node, view: EditorView, getPos: CBFn) {
     // We'll need these later
     this.node = node;
     this.outerView = view;
+    this.runtime = view['runtime'];
     this.getPos = getPos;
     const spec = DOMSerializer.renderSpec(
-      document,
+      view.dom.ownerDocument,
       this.node.type.spec.toDOM(this.node)
     );
     this.dom = spec.dom;
@@ -44,21 +51,133 @@ class GlossaryView {
   }
 
   getNodePosEx(left: number, top: number): number {
-    const objPos = this.outerView.posAtCoords({ left, top, });
+    const objPos = this.outerView.posAtCoords({ left, top });
     return objPos ? objPos.pos : null;
   }
 
   addEventListenerToView(): void {
     this.dom.addEventListener('mouseover', this.showSourceText.bind(this));
     this.dom.addEventListener('mouseout', this.hideSourceText.bind(this));
+    this.dom.addEventListener('click', this.selectNode.bind(this));
   }
   removeEventListenerToView(): void {
     this.dom.removeEventListener('mouseover', this.showSourceText.bind(this));
     this.dom.removeEventListener('mouseout', this.hideSourceText.bind(this));
+    this.dom.removeEventListener('click', this.selectNode.bind(this));
   }
 
   hideSourceText(_e: MouseEvent): void {
     this.close();
+  }
+
+  selectNode(e: MouseEvent): void {
+    if (undefined === e) {
+      return;
+    }
+    let anchorEl = this.dom;
+    if (e && e.currentTarget) {
+      anchorEl = e.currentTarget as globalThis.Node;
+    }
+    if (!anchorEl) {
+      this.destroyPopup();
+      return;
+    }
+    const popup = this._popUp_subMenu;
+    popup && popup.close('');
+    const viewPops = {
+      editorState: this.outerView.state,
+      editorView: this.outerView,
+
+      onCancel: this.onCancel,
+      onEdit: this.onEditGlossary,
+      onRemove: this.deleteGlossaryNode,
+      onMouseOut: this.onGlossarySubMenuMouseOut,
+    };
+    this._popUp_subMenu = createPopUp(GlossarySubMenu, viewPops, {
+      anchor: anchorEl,
+      autoDismiss: false,
+      onClose: this._onClose,
+      position: atAnchorTopCenter,
+    });
+  }
+
+  createGlossaryObject(editorView: EditorView, mode: number) {
+    return {
+      isGlossary: this.node.attrs.type,
+      selectedRowRefID: this.node.attrs.id,
+      term: this.node.attrs.term,
+      mode: mode, //0 = new , 1- modify, 2- delete
+      editorView: editorView,
+      runtime: this.runtime,
+    };
+  }
+
+  onEditGlossary = (view: EditorView): void => {
+    this._popUp_subMenu && this._popUp_subMenu.close('');
+
+    this._popUp = createPopUp(
+      GlossaryListUI,
+      this.createGlossaryObject(view, 2),
+      {
+        modal: true,
+        IsChildDialog: false,
+        autoDismiss: false,
+        onClose: (val) => {
+          if (this._popUp) {
+            this._popUp = null;
+            if (undefined !== val) {
+              this.updateGlossaryDetails(view, val);
+            }
+          }
+        },
+      }
+    );
+  }
+
+  updateGlossaryDetails(view: EditorView, glossary): void {
+    if (view.dispatch) {
+      const { selection } = view.state;
+      let { tr } = view.state;
+      tr = tr.setSelection(selection);
+      tr = this.updateGlossaryObject(tr, glossary) as Transaction;
+      view.dispatch(tr);
+    }
+  }
+
+  updateGlossaryObject(tr: Transform, glossary): Transform {
+    const newattrs = {};
+    Object.assign(newattrs, this.node.attrs);
+    newattrs['id'] = glossary.glossaryObject.id;
+    newattrs['description'] = glossary.glossaryObject.description;
+    newattrs['term'] = glossary.glossaryObject.term;
+    tr = tr.setNodeMarkup(
+      this.node.attrs.from,
+      undefined,
+      newattrs
+    );
+    return tr;
+  }
+
+  deleteGlossaryNode = (view: EditorView): void => {
+    const { state } = view;
+    let { tr } = state;
+    const { selection } = tr;
+
+    if ('glossary' === this.getNameAfter(selection)) {
+      tr = tr.delete(selection.$head.pos, selection.$head.pos + 2);
+      const parentPos = selection.$head.pos - selection.$head.parentOffset - 1;
+      const parentNode = selection.$head.parent;
+      if (parentNode) {
+        const newattrs = {};
+        Object.assign(newattrs, parentNode.attrs);
+        tr = tr.setNodeMarkup(parentPos, undefined, newattrs);
+      }
+      view.dispatch(tr);
+    }
+  }
+
+  getNameAfter(selection) {
+    return selection.$head?.nodeAfter?.type?.name;
   }
 
   _onClose = (): void => {
@@ -75,10 +194,9 @@ class GlossaryView {
     this._popUp_subMenu && this._popUp_subMenu.close('');
   }
 
-  onInfoSubMenuMouseOut = (): void => {
+  onGlossarySubMenuMouseOut = (): void => {
     this.destroyPopup();
   };
-
 
   addGlossaryContent() {
     if (this.node.attrs.term) {
@@ -93,7 +211,7 @@ class GlossaryView {
   open(e: MouseEvent): void {
     // Append a tooltip to the outer node
     // get the editor div
-    const parent = document.getElementsByClassName(
+    const parent = this.outerView.dom.getElementsByClassName(
       'ProseMirror czi-prosemirror-editor'
     )[0];
     const tooltip = this.dom.appendChild(document.createElement('div'));
@@ -129,7 +247,9 @@ class GlossaryView {
   }
 
   close(): void {
-    const tooltip = document.getElementsByClassName('molcit-glossary-tooltip');
+    const tooltip = this.outerView.dom.getElementsByClassName(
+      'molcit-glossary-tooltip'
+    );
     if (tooltip.length > 0) {
       tooltip[0].remove();
     }

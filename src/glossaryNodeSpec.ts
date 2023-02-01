@@ -4,7 +4,7 @@ const GlossaryNodeSpec: NodeSpec = {
   group: 'inline',
   content: 'text*',
   inline: true,
-  selectable: false,
+  selectable: true,
   // added new attributes to this spec.
   attrs: {
     from: { default: null },

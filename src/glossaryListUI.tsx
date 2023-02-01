@@ -6,14 +6,14 @@ import './ui/glossary.css';
 
 type GlossaryListProps = {
   glossaries: Glossary[];
-  glosarryObject: Glossary;
+  glossaryObject: Glossary;
   selectedRowRefID: string;
   isGlossary: boolean;
   term: string;
   close: (val?) => void;
   runtime: EditorRuntime;
 };
-let glosarryObject: Glossary;
+let glossaryObject: Glossary;
 let selectedRowRefID = '';
 let glossaries: Glossary[] = [];
 
@@ -28,7 +28,7 @@ class GlossaryListUI extends React.PureComponent<
     super(props);
     this.state = {
       ...props,
-      glosarryObject,
+      glossaryObject,
       glossaries,
     };
   }
@@ -107,11 +107,11 @@ class GlossaryListUI extends React.PureComponent<
 
             <div></div>
             <div className="molcit-searchdiv">
-              <table className="molcit-tablecitations" id="myTable">
+              <table className="molcit-tableglossaries" id="myTable">
                 <thead style={{backgroundColor: 'lightgray'}}>
-                  <tr className="molcit-citationrow">
-                    <th className="molcit-citationsheader"> {labelValue}</th>
-                    <th className="molcit-citationsheader">Description</th>
+                  <tr className="molcit-glossaryrow">
+                    <th className="molcit-glossaryheader"> {labelValue}</th>
+                    <th className="molcit-glossaryheader">Description</th>
                   </tr>
                 </thead>
                 <tbody className="molcit-citationbody">
@@ -185,11 +185,11 @@ class GlossaryListUI extends React.PureComponent<
   onRowClick(refId: string): void {
     selectedRowRefID = refId;
     if (selectedRowRefID !== undefined) {
-      glosarryObject = this.state.glossaries.find(
+      glossaryObject = this.state.glossaries.find(
         (u) => u.id === selectedRowRefID
       );
 
-      this.setState({selectedRowRefID, glosarryObject});
+      this.setState({selectedRowRefID, glossaryObject});
     }
   }
 
@@ -210,7 +210,7 @@ class GlossaryListUI extends React.PureComponent<
       const found = val.term.toUpperCase().includes(term.toUpperCase());
       if (found) {
         selectedRowRefID = val.id;
-        glosarryObject = val;
+        glossaryObject = val;
       }
       return found;
     });
@@ -218,7 +218,7 @@ class GlossaryListUI extends React.PureComponent<
       term: term,
       glossaries: filteredGlossary,
       selectedRowRefID,
-      glosarryObject,
+      glossaryObject,
     });
   }
 

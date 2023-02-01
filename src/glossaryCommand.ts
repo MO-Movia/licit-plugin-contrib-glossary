@@ -1,14 +1,12 @@
 import * as React from 'react';
-import { UICommand } from '@modusoperandi/licit-doc-attrs-step';
-import { EditorState, NodeSelection } from 'prosemirror-state';
-import { Transform } from 'prosemirror-transform';
-import { EditorView } from 'prosemirror-view';
+import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
+import {EditorState, NodeSelection, Transaction} from 'prosemirror-state';
+import {Transform} from 'prosemirror-transform';
+import {EditorView} from 'prosemirror-view';
 import GlossaryListUI from './GlossaryListUI';
-import { createPopUp } from '@modusoperandi/licit-ui-commands';
-import type { PopUpHandle } from '@modusoperandi/licit-ui-commands';
-import { Fragment } from 'prosemirror-model';
-import { EditorRuntime } from './types';
-
+import {createPopUp} from '@modusoperandi/licit-ui-commands';
+import type {PopUpHandle} from '@modusoperandi/licit-ui-commands';
+import {EditorRuntime} from './types';
 
 export class GlossaryCommand extends UICommand {
   _popUp: PopUpHandle | null = null;
@@ -27,34 +25,48 @@ export class GlossaryCommand extends UICommand {
 
   getSelectedText(editorView: EditorView) {
     let selectedText = '';
-    editorView.state.tr.doc.nodesBetween(editorView.state.selection.from, editorView.state.selection.to, (node, _pos) => {
-      if (node) {
-        selectedText = node.text;
+    editorView.state.tr.doc.nodesBetween(
+      editorView.state.selection.from,
+      editorView.state.selection.to,
+      (node, _pos) => {
+        if (node) {
+          selectedText = node.text;
+        }
+        return true;
       }
-      return true;
-    });
+    );
     return selectedText;
   }
 
-  createGlossaryObject(
-    editorView: EditorView
-  ) {
+  createGlossaryObject(editorView: EditorView) {
     return {
       isGlossary: this._isGlossary,
       selectedRowRefID: 1,
-      term: editorView.state.selection.empty ? '' : editorView.state.doc.cut(editorView.state.selection.from, editorView.state.selection.to).textContent.trim(),
+      term: editorView.state.selection.empty
+        ? ''
+        : editorView.state.doc
+            .cut(editorView.state.selection.from, editorView.state.selection.to)
+            .textContent.trim(),
       mode: 1, //0 = new , 1- modify, 2- delete
       editorView: editorView,
-      runtime: this.runtime
+      runtime: this.runtime,
     };
   }
 
   waitForUserInput = (
-    _state: EditorState,
-    _dispatch?: (tr: Transform) => void,
+    state: EditorState,
+    dispatch?: (tr: Transform) => void,
     view?: EditorView,
     _event?: React.SyntheticEvent
   ): Promise<unknown> => {
+    if (state.selection) {
+      const node = state.doc.cut(state.selection.from, state.selection.to);
+      if (node && 'glossary' === node.type.name) {
+        dispatch(this.deleteGlossaryNode(state, node.attrs['term']));
+        return Promise.resolve({doNothing: true});
+      }
+    }
+
     if (this._popUp) {
       return Promise.resolve(undefined);
     }
@@ -84,33 +96,14 @@ export class GlossaryCommand extends UICommand {
     glossary
   ): boolean => {
     if (dispatch) {
-      const { selection } = state;
-      let { tr } = state;
-      if (undefined !== glossary.glosarryObject.id) {
-        if (selection.empty) {
-          const textNode = state.schema.nodes.glossary.create(glossary.glosarryObject.term);
-          const newAttrs = {};
-          Object.assign(newAttrs, textNode['attrs']);
-          newAttrs['id'] = glossary.glosarryObject.id;
-          newAttrs['from'] = state.selection.from;
-          newAttrs['to'] = state.selection.to;
-          newAttrs['description'] = glossary.glosarryObject.description;
-          newAttrs['term'] = glossary.glosarryObject.term;
-          newAttrs['type'] = this._isGlossary ? 1 : 2;
-          tr = tr.insert(
-            state.selection.to,
-            Fragment.from(textNode),
+      const {selection} = state;
+      if (!glossary.doNothing) {
+        if (undefined !== glossary.glossaryObject.id) {
+          const transaction = this.createGlossaryNode(
+            state,
+            glossary,
+            !selection.empty
           );
-
-          tr = tr.setNodeMarkup(
-            state.selection.from,
-            undefined,
-            newAttrs
-          );
-          dispatch(tr);
-        }
-        else {
-          const transaction = this.createGlossaryNode(state, glossary);
           dispatch(transaction);
         }
       }
@@ -119,18 +112,26 @@ export class GlossaryCommand extends UICommand {
     return false;
   };
 
-  createGlossaryNode(state, glossary) {
+  createGlossaryNode(state: EditorState, glossary, replace: boolean) {
     const glossarynode = state.schema.nodes['glossary'];
     const newattrs = {};
     Object.assign(newattrs, glossarynode['attrs']);
-    newattrs['id'] = glossary.glosarryObject.id;
+    newattrs['id'] = glossary.glossaryObject.id;
     newattrs['from'] = state.selection.from;
     newattrs['to'] = state.selection.to;
-    newattrs['description'] = glossary.glosarryObject.description;
-    newattrs['term'] = glossary.glosarryObject.term;
+    newattrs['description'] = glossary.glossaryObject.description;
+    newattrs['term'] = glossary.glossaryObject.term;
     newattrs['type'] = this._isGlossary ? 1 : 2;
-    const selection = state.doc.cut(state.selection.from, state.selection.to);
-    const node = state.schema.nodes.glossary.create(newattrs, selection);
+    const node = state.schema.nodes.glossary.create(newattrs);
+    if (replace) {
+      return state.tr.replaceSelectionWith(node);
+    } else {
+      return state.tr.insert(state.selection.to, node);
+    }
+  }
+
+  deleteGlossaryNode(state: EditorState, term: string): Transaction {
+    const node = state.schema.text(term);
     return state.tr.replaceSelectionWith(node);
   }
 
@@ -145,7 +146,7 @@ export class GlossaryCommand extends UICommand {
     }
 
     const tr = state.tr;
-    const { selection } = tr;
+    const {selection} = tr;
     if (
       selection &&
       (selection as NodeSelection).node &&
@@ -156,4 +157,3 @@ export class GlossaryCommand extends UICommand {
     return true;
   };
 }
-
