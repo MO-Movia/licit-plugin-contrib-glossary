@@ -160,20 +160,23 @@ class GlossaryView {
 
   deleteGlossaryNode = (view: EditorView): void => {
     const { state } = view;
-    let { tr } = state;
-    const { selection } = tr;
-
-    if ('glossary' === this.getNameAfter(selection)) {
-      tr = tr.delete(selection.$head.pos, selection.$head.pos + 2);
-      const parentPos = selection.$head.pos - selection.$head.parentOffset - 1;
-      const parentNode = selection.$head.parent;
-      if (parentNode) {
-        const newattrs = {};
-        Object.assign(newattrs, parentNode.attrs);
-        tr = tr.setNodeMarkup(parentPos, undefined, newattrs);
+    const glossaryNode = state.tr.doc.nodeAt(this.node.attrs.from);
+    const nodeType = glossaryNode && glossaryNode.type?.name;
+    if (glossaryNode && 'glossary' === nodeType) {
+      const node = state.schema.text(this.node.attrs.term);
+      const tr = state.tr.replaceRangeWith(this.node.attrs.from, this.node.attrs.to, node);
+      const glossarySpan = document.getElementById(this.node.attrs.term + this.node.attrs.id + this.node.attrs.from);
+      if (glossarySpan) {
+        glossarySpan.style.color = 'black';
+        glossarySpan.style.textDecoration = 'none';
       }
       view.dispatch(tr);
     }
+  }
+
+  getNodeType(state) {
+    const node = state.tr.doc.nodeAt(this.node.attrs.from);
+    return node && node.type?.name;
   }
 
   getNameAfter(selection) {
@@ -201,6 +204,7 @@ class GlossaryView {
   addGlossaryContent() {
     if (this.node.attrs.term) {
       const iconSpan = document.createElement('span');
+      iconSpan.id = this.node.attrs.term + this.node.attrs.id + this.node.attrs.from;
       this.dom.appendChild(iconSpan);
       iconSpan.innerText = this.node.attrs.term;
       iconSpan.style.color = 'green';
