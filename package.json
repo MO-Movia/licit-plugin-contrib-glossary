@@ -15,7 +15,7 @@
     }
   ],
   "dependencies": {
-    "@modusoperandi/licit-ui-commands": "^0.1.13",
+    "@modusoperandi/licit-ui-commands": "^0.1.15",
     "font-awesome": "^4.7.0",
     "prosemirror-example-setup": "^1.2.1",
     "react-bootstrap": "^2.7.0",
