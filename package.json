@@ -98,7 +98,7 @@
     "lint:css": "stylelint \"**/*.css\"",
     "test:unit": "jest",
     "test:coverage": "jest --coverage",
-    "test": "jest --passWithNoTests",
+    "test": "jest --coverage",
     "prepare": "npm run build:dist",
     "publish:dist": "npm publish"
   },
