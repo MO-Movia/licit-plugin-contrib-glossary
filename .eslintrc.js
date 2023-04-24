@@ -68,7 +68,7 @@ module.exports = {
   overrides: [
     {
       // enable jest globals in test files
-      files: '*.test.ts',
+      files: ['*.test.ts','*.test.tsx'],
       plugins: ['jest'],
       env: {
         'jest/globals': true,

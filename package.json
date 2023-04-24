@@ -17,6 +17,8 @@
   "dependencies": {
     "@modusoperandi/licit-ui-commands": "^0.1.15",
     "font-awesome": "^4.7.0",
+    "enzyme": "^3.11.0",
+    "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "prosemirror-example-setup": "^1.2.1",
     "react-bootstrap": "^2.7.0",
     "terser-webpack-plugin": "^5.3.6"
@@ -71,7 +73,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.3.1",
     "jest-junit": "^14.0.1",
-    "jest-prosemirror": "^2.0.6",
+    "jest-prosemirror": "^1.0.10",
     "jest-sonar-reporter": "^2.0.0",
     "lint-staged": "^11.1.2",
     "prettier": "^2.5.0",
