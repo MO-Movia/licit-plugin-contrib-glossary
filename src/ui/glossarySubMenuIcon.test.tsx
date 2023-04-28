@@ -15,7 +15,8 @@ it('should render the component', () => {
         title: 'title',
     };
     wrapper.title = 'title';
-    const GlossarySubMenuIconRender = wrapper.instance();
-    GlossarySubMenuIconRender.title = 'title';
-    expect(GlossarySubMenuIconRender).toBeDefined();
+    const glossarySubMenuIconRender = wrapper.instance();
+    glossarySubMenuIconRender.title = 'title';
+    GlossarySubMenuIcon.get('');
+    expect(glossarySubMenuIconRender).toBeDefined();
 });
