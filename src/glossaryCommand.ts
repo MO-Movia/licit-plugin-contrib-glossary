@@ -3,7 +3,7 @@ import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {EditorState, NodeSelection, Transaction} from 'prosemirror-state';
 import {Transform} from 'prosemirror-transform';
 import {EditorView} from 'prosemirror-view';
-import GlossaryListUI from './GlossaryListUI';
+import GlossaryListUI from './glossaryListUI';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
 import type {PopUpHandle} from '@modusoperandi/licit-ui-commands';
 import {EditorRuntime} from './types';
