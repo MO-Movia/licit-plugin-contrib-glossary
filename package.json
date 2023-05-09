@@ -9,11 +9,6 @@
     "type": "git",
     "url": ""
   },
-  "maintainers": [
-    {
-      "name": "Firmusoft Solutions"
-    }
-  ],
   "dependencies": {
     "@modusoperandi/licit-ui-commands": "^0.1.15",
     "font-awesome": "^4.7.0",
@@ -43,7 +38,7 @@
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
-    "@cyclonedx/cyclonedx-npm": "^1.7.1",
+    "@cyclonedx/cyclonedx-npm": "^1.11.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
@@ -99,6 +94,8 @@
     "test:unit": "jest",
     "test:coverage": "jest --coverage",
     "test": "jest --passWithNoTests",
+    "ci:build": "npm run clean && npm run build:ts && npm run webpack && npm run build:babel && npm run build:css",
+    "ci:bom": "cyclonedx-npm --ignore-npm-errors --short-PURLs --output-format XML --output-file dist/bom.xml",
     "prepare": "npm run build:dist",
     "publish:dist": "npm publish"
   },
