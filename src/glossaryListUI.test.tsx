@@ -8,12 +8,6 @@ jest.mock('./types', () => ({
 }));
 Enzyme.configure({ adapter: new Adapter() });
 describe('GlossaryListUI component init', () => {
-    beforeEach(() => {
-
-
-        // Set up the mock implementation of getGlossary
-
-    });
     const gPropo = {
         glossaries: [],
         glossaryObject: { id: '3', term: 'CAS', description: 'Close Air Support' },
@@ -84,18 +78,26 @@ describe('GlossaryListUI component init', () => {
         const wrapper = shallow(<GlossaryListUI {...gPropo} />);
         const listUIRender = wrapper.instance();
         const res = null;
-        listUIRender.updateState(res);
+        expect(listUIRender.updateState(res)).toBeUndefined();
+
     });
 
     it('should call _cancel', () => {
         const wrapper = shallow(<GlossaryListUI {...gPropo} />);
         const listUIRender = wrapper.instance();
+        listUIRender.props = {close:()=>{}};
+        const spy = jest.spyOn(listUIRender.props,'close');
         listUIRender._cancel();
+        expect(spy).toHaveBeenCalled();
     });
     it('should call _save', () => {
         const wrapper = shallow(<GlossaryListUI {...gPropo} />);
         const listUIRender = wrapper.instance();
+        listUIRender.props = {close:(a:any)=>{}};
+        listUIRender.state = {};
+        const spy = jest.spyOn(listUIRender.props,'close');
         listUIRender._save();
+        expect(spy).toHaveBeenCalledWith({});
     });
     it('should call updateState method', () => {
         const wrapper = shallow(<GlossaryListUI {...gPropo} />);
@@ -119,7 +121,7 @@ describe('GlossaryListUI component init', () => {
     it('should set state based on the onRowClick method with undefined value', () => {
         const wrapper = shallow(<GlossaryListUI {...gPropo} />);
         const listUIRender = wrapper.instance();
-        listUIRender.onRowClick(undefined);
+        expect(listUIRender.onRowClick(undefined)).toBeUndefined();
     });
     it('should call updateState method', () => {
         const wrapper = shallow(<GlossaryListUI {...gPropo} />);
@@ -140,7 +142,7 @@ describe('GlossaryListUI component init', () => {
         authorEle.id = 'termtxt';
         document.body.appendChild(authorEle);
         listUIRender.updateState(res);
-        listUIRender.onSearchGlossary();
+        expect(listUIRender.onSearchGlossary()).toBe(undefined);
     });
     it('should set state based on the onRowClick method', () => {
         const wrapper = shallow(<GlossaryListUI {...gPropo} />);

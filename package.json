@@ -1,6 +1,6 @@
 {
   "name": "@modusoperandi/licit-glossary",
-  "version": "0.0.7",
+  "version": "0.0.4",
   "description": "MO's Glossary ProseMirror Plugin",
   "main": "dist/index.js",
   "typings": "./index.d.ts",

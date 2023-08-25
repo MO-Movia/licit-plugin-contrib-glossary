@@ -69,7 +69,7 @@ describe('GlossaryPlugin', () => {
       }
     );
     glossaryCmd._isGlossary =false;
-    glossaryCmd.deleteGlossaryNode(view.state,'term');
+   expect(glossaryCmd.deleteGlossaryNode(view.state,'term')).toBeDefined();
   });
   it('getSelectedText() returns the selected text in the editor view', () => {
     const before = 'hello';

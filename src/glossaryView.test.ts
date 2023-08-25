@@ -159,7 +159,7 @@ describe('Glossary Plugin Extended', () => {
         getNodePosEx.mockReturnValue(12);
         // Call the close function
         cView.close();
-        cView.setContentRight(clickEvent, errorinfodiv, tooltip, ttContent);
+        expect(cView.setContentRight(clickEvent, errorinfodiv, tooltip, ttContent)).toBeUndefined()
 
     });
     it('GlossaryView call selectNode', () => {

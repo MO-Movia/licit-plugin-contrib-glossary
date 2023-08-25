@@ -76,7 +76,7 @@ describe('GlossaryPlugin', () => {
         view,
         undefined as any
       );
-      gView.createGlossaryObject(view, 1);
+      expect(gView.createGlossaryObject(view, 1)).toBeDefined()
 
     });
   });
@@ -269,9 +269,17 @@ describe('GlossaryPlugin', () => {
           autoDismiss: false,
         }
       );
-      glossaryCmd.waitForUserInput(editor.state, undefined, view);
+      glossaryCmd.waitForUserInput(editor.state, undefined, view).then(
+        (value)=>{
+          expect(value).toBe(undefined);
+        } 
+      );
       glossaryCmd._popUp = null;
-      glossaryCmd.waitForUserInput(editor.state, undefined, view);
+    glossaryCmd.waitForUserInput(editor.state, undefined, view).then(
+      (value)=>{
+        expect(value).toBe({});
+      } 
+    );
     });
 
     it('should call initKeyCommands', () => {
