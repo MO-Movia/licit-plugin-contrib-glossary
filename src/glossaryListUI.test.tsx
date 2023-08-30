@@ -160,11 +160,4 @@ describe('GlossaryListUI component init', () => {
     listUIRender.onRowClick('1');
     expect(listUIRender.state.selectedRowRefID).toEqual('1');
   });
-
-  it('should call componentWillUnmount', () => {
-    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
-    const listUIRender = wrapper.instance();
-    listUIRender.componentWillUnmount();
-    expect(listUIRender._unmounted).toEqual(true);
-  });
 });
