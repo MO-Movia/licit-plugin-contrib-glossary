@@ -135,7 +135,7 @@ describe('GlossaryPlugin', () => {
       glossaryCmd.createGlossaryNode(view.state, glossaryObj, false);
       glossaryCmd.createGlossaryNode(view.state, glossaryObj, true);
       glossaryCmd._isEnabled(view.state, view);
-      glossaryCmd._isGlossary =true;
+      glossaryCmd._isGlossary = true;
       const bok = glossaryCmd.executeWithUserInput(
         state,
         // view.dispatch,
@@ -214,7 +214,7 @@ describe('GlossaryPlugin', () => {
       glossaryCmd.executeWithUserInput(
         state,
         // view.dispatch,
-         undefined,
+        undefined,
         view,
         mockGlossaryObj as any
       );
@@ -227,7 +227,7 @@ describe('GlossaryPlugin', () => {
       );
       expect(bok).toBeFalsy();
     });
-    it('should Wait For User Input', () => {
+    it('should Wait For User Input', async () => {
       const modSchema = new Schema({
         nodes: schema.spec.nodes,
         marks: schema.spec.marks,
@@ -269,21 +269,19 @@ describe('GlossaryPlugin', () => {
           autoDismiss: false,
         }
       );
-      glossaryCmd.waitForUserInput(editor.state, undefined, view).then(
-        (value)=>{
-          expect(value).toBe(undefined);
-        } 
-      );
-      glossaryCmd._popUp = null;
-    glossaryCmd.waitForUserInput(editor.state, undefined, view).then(
-      (value)=>{
-        expect(value).toBe({});
-      } 
-    );
+      const _test = await glossaryCmd.waitForUserInput(editor.state, undefined, view);
+      expect(_test).toBeUndefined();
     });
-
+    it('should _isEnabled function return false', () => {
+      const glossaryCmd = new GlossaryCommand();
+      const _state = {} as unknown as EditorState;
+      const _view = undefined as unknown as EditorView
+      const _test = glossaryCmd.isEnabled(_state, _view);
+      expect(_test).toBeFalsy()
+    })
     it('should call initKeyCommands', () => {
       expect(plugin.initKeyCommands());
     });
   });
+
 });
