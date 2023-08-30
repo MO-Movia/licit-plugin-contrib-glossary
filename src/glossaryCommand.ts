@@ -91,9 +91,9 @@ export class GlossaryCommand extends UICommand {
 
   executeWithUserInput = (
     state: EditorState,
-    dispatch: (tr: Transform) => void | undefined,
-    _view: EditorView | undefined,
-    glossary
+    dispatch?: (tr: Transform) => void | undefined,
+    _view?: EditorView | undefined,
+    glossary?
   ): boolean => {
     if (dispatch) {
       const {selection} = state;

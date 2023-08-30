@@ -2,42 +2,41 @@ import GlossaryNodeSpec from './glossaryNodeSpec';
 
 const node = {
   attrs: {
-    from: 0,
-    to: 2,
-    type: 1,
+    from: '0',
+    to: '2',
+    type: '1',
     term: 'term',
-    id: 1,
+    id: '1',
     description: 'Test description',
-
   },
 };
 describe('GlossaryNodeSpec', () => {
   it('parse dom attributes', () => {
     const dom = document.createElement('span');
-    dom.setAttribute('from', '0' as any);
-    dom.setAttribute('to', '2' as any);
+    dom.setAttribute('from', '0');
+    dom.setAttribute('to', '2');
     dom.setAttribute('description', node.attrs.description);
-    dom.setAttribute('type', '1' as any);
-    dom.setAttribute('term', 'term' as any);
-    dom.setAttribute('id', '1' as any);
+    dom.setAttribute('type', '1');
+    dom.setAttribute('term', 'term');
+    dom.setAttribute('id', '1');
 
-    const { from, to, description, id, term, type } = node.attrs;
+    const {from, to, description, id, term, type} = node.attrs;
 
-    const attsOutput: any = {
+    const attsOutput: Record<string, string | null> = {
       from,
       to,
       description,
       id,
       term,
-      type
+      type,
     };
-    const attrs: any = {
+    const attrs: Record<string, string | null> = {
       from,
       to,
       description,
       id,
       term,
-      type
+      type,
     };
     attrs.from = dom.getAttribute('from');
     attrs.to = dom.getAttribute('to');
@@ -53,21 +52,21 @@ describe('GlossaryNodeSpec', () => {
     attsOutput.term = dom.getAttribute('term');
     attsOutput.type = dom.getAttribute('type');
 
-    const getAttrs = GlossaryNodeSpec.parseDOM[0].getAttrs(dom);
+    const getAttrs = GlossaryNodeSpec.parseDOM?.[0].getAttrs?.(dom);
     expect(getAttrs).toEqual(attsOutput);
   });
 
   it('parse dom attributes with null', () => {
     const dom = document.createElement('span');
-    const { from, to, description, id, term, type } = node.attrs;
+    const {from, to, description, id, term, type} = node.attrs;
 
-    const attrs: any = {
+    const attrs: Record<string, string | null> = {
       from,
       to,
       description,
       id,
       term,
-      type
+      type,
     };
     attrs.from = dom.getAttribute('from');
     attrs.to = dom.getAttribute('to');
@@ -76,7 +75,7 @@ describe('GlossaryNodeSpec', () => {
     attrs.term = dom.getAttribute('term');
     attrs.type = dom.getAttribute('type');
 
-    const getAttrs = GlossaryNodeSpec.parseDOM[0].getAttrs(dom);
+    const getAttrs = GlossaryNodeSpec.parseDOM?.[0]?.getAttrs?.(dom);
     expect(getAttrs).toStrictEqual(attrs);
   });
 });

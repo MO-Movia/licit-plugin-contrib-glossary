@@ -33,7 +33,7 @@ module.exports = {
         argsIgnorePattern: '^_',
       },
     ],
-    '@typescript-eslint/no-this-alias':'off',
+    '@typescript-eslint/no-this-alias': 'off',
     'no-var': 'error',
     'prefer-const': 'error',
     quotes: [2, 'single', {avoidEscape: true}],
@@ -62,13 +62,12 @@ module.exports = {
     console: false,
     localStorage: false,
     NamedNodeMap: false,
-    DOMParser:false,
-    CustomEvent:false,
+    CustomEvent: false,
   },
   overrides: [
     {
       // enable jest globals in test files
-      files: ['*.test.ts','*.test.tsx'],
+      files: ['*.test.ts', '*.test.tsx'],
       plugins: ['jest'],
       env: {
         'jest/globals': true,
