@@ -20,7 +20,8 @@ export default {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: ['*.js', '*.ts'],
+
+  collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}'],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: '../coverage',
@@ -36,7 +37,6 @@ export default {
   // A list of reporter names that Jest uses when writing coverage reports
   coverageReporters: [
     //   "json",
-    //   "text",
     'text',
     'cobertura',
     'lcov',
@@ -171,7 +171,7 @@ export default {
   // ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
-  testRegex: ['((\\.|/*.)(test))\\.ts?$'],
+  testRegex: ['((\\.|/*.)(test))\\.(ts?|tsx?)$'],
 
   // This option allows the use of a custom results processor
   // testResultsProcessor: "jest-sonar-reporter",

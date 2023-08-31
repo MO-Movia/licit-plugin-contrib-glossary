@@ -1,6 +1,6 @@
 {
   "name": "@modusoperandi/licit-glossary",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "MO's Glossary ProseMirror Plugin",
   "main": "dist/index.js",
   "typings": "./index.d.ts",
@@ -30,6 +30,10 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.16.0",
     "@babel/plugin-proposal-pipeline-operator": "^7.16.0",
     "@babel/plugin-proposal-throw-expressions": "^7.16.0",
+    "@babel/plugin-proposal-json-strings": "^7.16.0",
+    "@babel/plugin-proposal-numeric-separator": "^7.16.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.16.0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.16.0",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-syntax-import-meta": "^7.10.4",
     "@babel/plugin-transform-parameters": "^7.16.3",
@@ -66,7 +70,9 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.3.1",
     "jest-junit": "^14.0.1",
-    "jest-prosemirror": "^2.0.6",
+    "jest-prosemirror": "^1.0.10",
+    "enzyme": "^3.11.0",
+    "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "jest-sonar-reporter": "^2.0.0",
     "lint-staged": "^11.1.2",
     "prettier": "^2.5.0",
@@ -81,6 +87,9 @@
     "webpack-cli": "^4.9.1",
     "write-file-webpack-plugin": "^4.5.1"
   },
+  "overrides": {
+    "semver": "^7.5.2"
+  },
   "scripts": {
     "clean": "rm -rf dist/ && rm -f modusoperandi-licit-glossary-*.*.*.tgz",
     "webpack": "webpack",
@@ -90,10 +99,10 @@
     "build:dist": "npm run clean && npm run build:ts && npm run webpack && npm run build:babel && npm run build:css",
     "lint": "npm run lint:css & npm run lint:ts",
     "lint:ts": "eslint src --ext .ts,.tsx --fix",
-    "lint:css": "stylelint \"**/*.css\"",
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "test": "jest",
     "test:unit": "jest",
     "test:coverage": "jest --coverage",
-    "test": "jest --passWithNoTests",
     "ci:build": "npm run clean && npm run build:ts && npm run webpack && npm run build:babel && npm run build:css",
     "ci:bom": "cyclonedx-npm --ignore-npm-errors --short-PURLs --output-format XML --output-file dist/bom.xml",
     "prepare": "npm run build:dist",

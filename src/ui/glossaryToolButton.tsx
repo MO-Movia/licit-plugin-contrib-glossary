@@ -1,9 +1,10 @@
 import * as React from 'react';
 import cx from 'classnames';
-import type { PointerSurfaceProps } from '@modusoperandi/licit-ui-commands';
-
-import {TooltipSurface} from '@modusoperandi/licit-ui-commands';
-import { PointerSurface } from '@modusoperandi/licit-ui-commands';
+import {
+  TooltipSurface,
+  PointerSurfaceProps,
+  PointerSurface,
+} from '@modusoperandi/licit-ui-commands';
 
 export class GlossaryToolButton extends React.PureComponent {
   props: PointerSurfaceProps & {

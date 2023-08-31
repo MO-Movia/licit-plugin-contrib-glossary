@@ -91,9 +91,9 @@ export class GlossaryCommand extends UICommand {
 
   executeWithUserInput = (
     state: EditorState,
-    dispatch: (tr: Transform) => void | undefined,
-    _view: EditorView | undefined,
-    glossary
+    dispatch?: (tr: Transform) => void | undefined,
+    _view?: EditorView | undefined,
+    glossary?
   ): boolean => {
     if (dispatch) {
       const {selection} = state;
@@ -135,25 +135,10 @@ export class GlossaryCommand extends UICommand {
     return state.tr.replaceSelectionWith(node);
   }
 
-  _isEnabled = (state: EditorState, view: EditorView): boolean => {
-    if (!view) {
-      return false;
-    }
-
-    this.runtime = view['runtime'];
-    if (!this.runtime) {
-      return false;
-    }
-
-    const tr = state.tr;
-    const {selection} = tr;
-    if (
-      selection &&
-      (selection as NodeSelection).node &&
-      'image' === (selection as NodeSelection).node.type.name
-    ) {
-      return false;
-    }
-    return true;
+  _isEnabled = (state: EditorState, view?: EditorView): boolean => {
+    return (
+      view?.['runtime'] &&
+      'image' !== (state.tr.selection as NodeSelection)?.node?.type?.name
+    );
   };
 }
