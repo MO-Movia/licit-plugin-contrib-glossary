@@ -135,10 +135,6 @@
   width: 340px;
 }
 
-.czi-editor-frameset .ProseMirror {
-  counter-reset: prosemirror-glossary;
-}
-
 .czi-editor-frameset .molcit-glossary-submenu {
   display: flex;
   justify-content: center;

@@ -1,18 +1,20 @@
 import * as React from 'react';
 import {EditorView} from 'prosemirror-view';
-import GlossaryToolButton from './ui/glossaryToolButton';
-import GlossarySubMenuIcon from './ui/glossarySubMenuIcon';
+import {GlossaryToolButton} from './ui/glossaryToolButton';
+import {GlossarySubMenuIcon} from './ui/glossarySubMenuIcon';
 import './ui/glossary.css';
 
-export class GlossarySubMenu extends React.PureComponent{
-  props: {
-    editorView: EditorView;
-    onCancel: (view: EditorView) => void;
-    onEdit: (view: EditorView) => void;
-    onRemove: (view: EditorView) => void;
-    onMouseOut: () => void;
-  };
+type GlossarysubMenuProps = {
+  editorView: EditorView;
+  onCancel: (view: EditorView) => void;
+  onEdit: (view: EditorView) => void;
+  onRemove: (view: EditorView) => void;
+  onMouseOut: () => void;
+};
 
+export class GlossarySubMenu extends React.PureComponent{
+
+  declare props: GlossarysubMenuProps;
   _unmounted = false;
 
   state = {
@@ -46,4 +48,4 @@ export class GlossarySubMenu extends React.PureComponent{
   }
 }
 
-export default GlossarySubMenu;
+

@@ -17,13 +17,10 @@ let glossaryObject: Glossary;
 let selectedRowRefID = '';
 let glossaries: Glossary[] = [];
 
-class GlossaryListUI extends React.PureComponent<
+export class GlossaryListUI extends React.PureComponent<
   GlossaryListProps,
   GlossaryListProps
 > {
-  _unmounted = false;
-  _popUp = null;
-
   constructor(props: GlossaryListProps) {
     super(props);
     this.state = {
@@ -64,10 +61,6 @@ class GlossaryListUI extends React.PureComponent<
       });
       this.setTermValue();
     }
-  }
-
-  componentWillUnmount(): void {
-    this._unmounted = true;
   }
 
   componentDidMount(): void {
@@ -231,4 +224,4 @@ class GlossaryListUI extends React.PureComponent<
   };
 }
 
-export default GlossaryListUI;
+

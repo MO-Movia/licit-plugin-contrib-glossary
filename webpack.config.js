@@ -1,15 +1,17 @@
 /* eslint-disable */
-
-var webpack = require('webpack'),
-  TerserPlugin = require('terser-webpack-plugin'),
-  WriteFilePlugin = require('write-file-webpack-plugin'),
-  path = require('path');
-
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+import webpack from 'webpack';
+import TerserPlugin from 'terser-webpack-plugin';
+import WriteFilePlugin from 'write-file-webpack-plugin';
+import path, {dirname} from 'path';
+import {CleanWebpackPlugin} from 'clean-webpack-plugin';
+import {fileURLToPath} from 'url';
 
 const NODE_ENV = process.env.NODE_ENV || 'production';
 
 var isDev = 'development' === NODE_ENV || 0;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 var options = {
   mode: NODE_ENV,
@@ -46,6 +48,14 @@ var options = {
             },
           },
         ],
+      },
+      {
+        test: /\.(js|mjs|jsx)$/,
+        include: /node_modules/,
+        type: 'javascript/auto',
+        resolve: {
+          fullySpecified: false,
+        },
       },
     ],
   },
@@ -86,4 +96,4 @@ options.plugins.push(function () {
   });
 });
 
-module.exports = options;
+export default options;
