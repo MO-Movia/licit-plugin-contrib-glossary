@@ -88,7 +88,8 @@
     "write-file-webpack-plugin": "^4.5.1"
   },
   "overrides": {
-    "semver": "^7.5.2"
+    "semver": ">=7.5.2",
+    "postcss": ">=8.4.31"
   },
   "scripts": {
     "clean": "rm -rf dist/ && rm -f modusoperandi-licit-glossary-*.*.*.tgz",
