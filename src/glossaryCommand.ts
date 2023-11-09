@@ -111,6 +111,10 @@ export class GlossaryCommand extends UICommand {
 
     return false;
   };
+  
+  cancel(): void {
+    return null;
+  }
 
   createGlossaryNode(state: EditorState, glossary, replace: boolean) {
     const glossarynode = state.schema.nodes['glossary'];
