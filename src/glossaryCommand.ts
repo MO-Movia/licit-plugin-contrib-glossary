@@ -111,7 +111,7 @@ export class GlossaryCommand extends UICommand {
 
     return false;
   };
-  
+
   cancel(): void {
     return null;
   }
@@ -140,6 +140,14 @@ export class GlossaryCommand extends UICommand {
   }
 
   _isEnabled = (state: EditorState, view?: EditorView): boolean => {
+    if (!view) {
+      return false;
+    }
+
+    this.runtime = view['runtime'];
+    if (!this.runtime) {
+      return false;
+    }
     return (
       view?.['runtime'] &&
       'image' !== (state.tr.selection as NodeSelection)?.node?.type?.name
