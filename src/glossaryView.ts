@@ -1,12 +1,16 @@
-import { DOMSerializer, Node } from 'prosemirror-model';
-import { EditorView } from 'prosemirror-view';
-import { createPopUp, PopUpHandle, atAnchorTopCenter } from '@modusoperandi/licit-ui-commands';
+import {DOMSerializer, Node} from 'prosemirror-model';
+import {EditorView} from 'prosemirror-view';
+import {
+  createPopUp,
+  PopUpHandle,
+  atAnchorTopCenter,
+} from '@modusoperandi/licit-ui-commands';
 import './ui/glossary.css';
-import { Transaction } from 'prosemirror-state';
-import { Transform } from 'prosemirror-transform';
-import GlossarySubMenu from './glossarySubMenu';
-import GlossaryListUI from './glossaryListUI';
-import { EditorRuntime } from './types';
+import {Transaction} from 'prosemirror-state';
+import {Transform} from 'prosemirror-transform';
+import {GlossarySubMenu} from './glossarySubMenu';
+import {GlossaryListUI} from './glossaryListUI';
+import {EditorRuntime} from './types';
 
 type CBFn = () => void;
 const GLOSSARY = 'glossary';
@@ -18,7 +22,7 @@ export type Style = {
   };
 };
 
-class GlossaryView {
+export class GlossaryView {
   node: Node = null;
   outerView: EditorView = null;
   getPos = null;
@@ -51,7 +55,7 @@ class GlossaryView {
   }
 
   getNodePosEx(left: number, top: number): number {
-    const objPos = this.outerView.posAtCoords({ left, top });
+    const objPos = this.outerView.posAtCoords({left, top});
     return objPos ? objPos.pos : null;
   }
 
@@ -75,7 +79,7 @@ class GlossaryView {
       return;
     }
     let anchorEl = this.dom;
-    if (e && e.currentTarget) {
+    if (e?.currentTarget) {
       anchorEl = e.currentTarget as globalThis.Node;
     }
     if (!anchorEl) {
@@ -83,7 +87,7 @@ class GlossaryView {
       return;
     }
     const popup = this._popUp_subMenu;
-    popup && popup.close('');
+    popup?.close('');
     const viewPops = {
       editorState: this.outerView.state,
       editorView: this.outerView,
@@ -113,7 +117,7 @@ class GlossaryView {
   }
 
   onEditGlossary = (view: EditorView): void => {
-    this._popUp_subMenu && this._popUp_subMenu.close('');
+    this._popUp_subMenu?.close('');
 
     this._popUp = createPopUp(
       GlossaryListUI,
@@ -132,12 +136,12 @@ class GlossaryView {
         },
       }
     );
-  }
+  };
 
   updateGlossaryDetails(view: EditorView, glossary): void {
     if (view.dispatch) {
-      const { selection } = view.state;
-      let { tr } = view.state;
+      const {selection} = view.state;
+      let {tr} = view.state;
       tr = tr.setSelection(selection);
       tr = this.updateGlossaryObject(tr, glossary) as Transaction;
       view.dispatch(tr);
@@ -150,33 +154,35 @@ class GlossaryView {
     newattrs['id'] = glossary.glossaryObject.id;
     newattrs['description'] = glossary.glossaryObject.description;
     newattrs['term'] = glossary.glossaryObject.term;
-    tr = tr.setNodeMarkup(
-      this.node.attrs.from,
-      undefined,
-      newattrs
-    );
+    tr = tr.setNodeMarkup(this.node.attrs.from, undefined, newattrs);
     return tr;
   }
 
   deleteGlossaryNode = (view: EditorView): void => {
-    const { state } = view;
+    const {state} = view;
     const glossaryNode = state.tr.doc.nodeAt(this.node.attrs.from);
-    const nodeType = glossaryNode && glossaryNode.type?.name;
+    const nodeType = glossaryNode?.type?.name;
     if (glossaryNode && 'glossary' === nodeType) {
       const node = state.schema.text(this.node.attrs.term);
-      const tr = state.tr.replaceRangeWith(this.node.attrs.from, this.node.attrs.to, node);
-      const glossarySpan = document.getElementById(this.node.attrs.term + this.node.attrs.id + this.node.attrs.from);
+      const tr = state.tr.replaceRangeWith(
+        this.node.attrs.from,
+        this.node.attrs.to,
+        node
+      );
+      const glossarySpan = document.getElementById(
+        this.node.attrs.term + this.node.attrs.id + this.node.attrs.from
+      );
       if (glossarySpan) {
         glossarySpan.style.color = 'black';
         glossarySpan.style.textDecoration = 'none';
       }
       view.dispatch(tr);
     }
-  }
+  };
 
   getNodeType(state) {
     const node = state.tr.doc.nodeAt(this.node.attrs.from);
-    return node && node.type?.name;
+    return node?.type?.name;
   }
 
   getNameAfter(selection) {
@@ -193,8 +199,8 @@ class GlossaryView {
   };
 
   destroyPopup(): void {
-    this._popUp && this._popUp.close('');
-    this._popUp_subMenu && this._popUp_subMenu.close('');
+    this._popUp?.close('');
+    this._popUp_subMenu?.close('');
   }
 
   onGlossarySubMenuMouseOut = (): void => {
@@ -204,7 +210,8 @@ class GlossaryView {
   addGlossaryContent() {
     if (this.node.attrs.term) {
       const iconSpan = document.createElement('span');
-      iconSpan.id = this.node.attrs.term + this.node.attrs.id + this.node.attrs.from;
+      iconSpan.id =
+        this.node.attrs.term + this.node.attrs.id + this.node.attrs.from;
       this.dom.appendChild(iconSpan);
       iconSpan.innerText = this.node.attrs.term;
       iconSpan.style.color = 'green';
@@ -277,5 +284,3 @@ class GlossaryView {
     return true;
   }
 }
-
-export default GlossaryView;

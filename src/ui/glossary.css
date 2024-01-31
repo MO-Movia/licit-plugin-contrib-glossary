@@ -109,8 +109,6 @@
   top: calc(100% + 10px);
   width: 400px;
   z-index: 9999;
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none;
 }
 
@@ -133,10 +131,6 @@
   color: darkgray;
   padding: 20px;
   width: 340px;
-}
-
-.czi-editor-frameset .ProseMirror {
-  counter-reset: prosemirror-glossary;
 }
 
 .czi-editor-frameset .molcit-glossary-submenu {

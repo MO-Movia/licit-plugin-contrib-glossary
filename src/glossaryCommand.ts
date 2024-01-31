@@ -3,7 +3,7 @@ import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
 import {EditorState, NodeSelection, Transaction} from 'prosemirror-state';
 import {Transform} from 'prosemirror-transform';
 import {EditorView} from 'prosemirror-view';
-import GlossaryListUI from './glossaryListUI';
+import {GlossaryListUI} from './glossaryListUI';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
 import type {PopUpHandle} from '@modusoperandi/licit-ui-commands';
 import {EditorRuntime} from './types';
@@ -49,7 +49,12 @@ export class GlossaryCommand extends UICommand {
             .textContent.trim(),
       mode: 1, //0 = new , 1- modify, 2- delete
       editorView: editorView,
-      runtime: this.runtime,
+      runtime:
+        typeof this.runtime !== 'undefined'
+          ? this.runtime
+          : typeof this.runtime !== 'undefined'
+          ? this.runtime
+          : editorView['runtime'],
     };
   }
 
@@ -91,9 +96,9 @@ export class GlossaryCommand extends UICommand {
 
   executeWithUserInput = (
     state: EditorState,
-    dispatch: (tr: Transform) => void | undefined,
-    _view: EditorView | undefined,
-    glossary
+    dispatch?: (tr: Transform) => void | undefined,
+    _view?: EditorView | undefined,
+    glossary?
   ): boolean => {
     if (dispatch) {
       const {selection} = state;
@@ -111,6 +116,10 @@ export class GlossaryCommand extends UICommand {
 
     return false;
   };
+
+  cancel(): void {
+    return null;
+  }
 
   createGlossaryNode(state: EditorState, glossary, replace: boolean) {
     const glossarynode = state.schema.nodes['glossary'];
@@ -135,25 +144,22 @@ export class GlossaryCommand extends UICommand {
     return state.tr.replaceSelectionWith(node);
   }
 
-  _isEnabled = (state: EditorState, view: EditorView): boolean => {
-    if (!view) {
-      return false;
-    }
-
-    this.runtime = view['runtime'];
-    if (!this.runtime) {
-      return false;
-    }
-
-    const tr = state.tr;
-    const {selection} = tr;
-    if (
-      selection &&
-      (selection as NodeSelection).node &&
-      'image' === (selection as NodeSelection).node.type.name
-    ) {
-      return false;
-    }
-    return true;
+  _isEnabled = (state: EditorState, view?: EditorView): boolean => {
+    return (
+      view?.['runtime'] &&
+      'image' !== (state.tr.selection as NodeSelection)?.node?.type?.name
+    );
   };
+
+  renderLabel() {
+    return null;
+  }
+
+  isActive(): boolean {
+    return true;
+  }
+
+  executeCustom(_state: EditorState, tr: Transform): Transform {
+    return tr;
+  }
 }
