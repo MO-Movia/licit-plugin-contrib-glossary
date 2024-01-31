@@ -8,8 +8,8 @@ import {
 import './ui/glossary.css';
 import {Transaction} from 'prosemirror-state';
 import {Transform} from 'prosemirror-transform';
-import GlossarySubMenu from './glossarySubMenu';
-import GlossaryListUI from './glossaryListUI';
+import {GlossarySubMenu} from './glossarySubMenu';
+import {GlossaryListUI} from './glossaryListUI';
 import {EditorRuntime} from './types';
 
 type CBFn = () => void;
@@ -22,7 +22,7 @@ export type Style = {
   };
 };
 
-class GlossaryView {
+export class GlossaryView {
   node: Node = null;
   outerView: EditorView = null;
   getPos = null;
@@ -284,5 +284,3 @@ class GlossaryView {
     return true;
   }
 }
-
-export default GlossaryView;

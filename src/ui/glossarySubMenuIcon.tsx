@@ -3,7 +3,12 @@ import * as React from 'react';
 const VALID_CHARS = /[a-z_]+/;
 const cached = {};
 
-class GlossarySubMenuIcon extends React.PureComponent {
+type GlossarySubMenuIconProps = {
+  type: string;
+  title?: string;
+};
+
+export class GlossarySubMenuIcon extends React.PureComponent {
   // Get the static Icon.
   static get(type: string, title?: string): React.ReactNode {
     const key = `${type || ''}-${title || ''}`;
@@ -12,10 +17,7 @@ class GlossarySubMenuIcon extends React.PureComponent {
     return icon;
   }
 
-  props: {
-    type: string;
-    title?: string;
-  };
+  declare props: GlossarySubMenuIconProps;
 
   render() {
     const {type, title} = this.props;
@@ -32,4 +34,4 @@ class GlossarySubMenuIcon extends React.PureComponent {
   }
 }
 
-export default GlossarySubMenuIcon;
+

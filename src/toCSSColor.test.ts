@@ -1,4 +1,4 @@
-import toCSSColor, { isTransparent } from './toCSSColor';
+import  { toCSSColor,isTransparent } from './toCSSColor';
 
 describe('toCSSColor', () => {
     it('should return an empty string when the input is falsy', () => {

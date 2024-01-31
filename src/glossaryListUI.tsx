@@ -17,7 +17,7 @@ let glossaryObject: Glossary;
 let selectedRowRefID = '';
 let glossaries: Glossary[] = [];
 
-class GlossaryListUI extends React.PureComponent<
+export class GlossaryListUI extends React.PureComponent<
   GlossaryListProps,
   GlossaryListProps
 > {
@@ -224,4 +224,4 @@ class GlossaryListUI extends React.PureComponent<
   };
 }
 
-export default GlossaryListUI;
+

@@ -1,4 +1,4 @@
-import GlossaryNodeSpec from './glossaryNodeSpec';
+import {GlossaryNodeSpec} from './glossaryNodeSpec';
 
 const node = {
   attrs: {

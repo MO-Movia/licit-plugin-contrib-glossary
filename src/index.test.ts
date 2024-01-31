@@ -3,12 +3,12 @@ import {schema, builders} from 'prosemirror-test-builder';
 import {Schema} from 'prosemirror-model';
 import {EditorState, TextSelection, Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
-import GlossaryView from './glossaryView';
+import {GlossaryView} from './glossaryView';
 import {GlossaryCommand} from './glossaryCommand';
 import {Transform} from 'prosemirror-transform';
 import {createEditor} from 'jest-prosemirror';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
-import GlossaryListUI from './glossaryListUI';
+import {GlossaryListUI} from './glossaryListUI';
 import {EditorRuntime} from './types';
 
 class TestPlugin extends Plugin {

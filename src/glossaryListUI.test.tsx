@@ -1,6 +1,6 @@
 import Enzyme, {shallow} from 'enzyme';
 import Adapter from '@cfaester/enzyme-adapter-react-18';
-import GlossaryListUI from './glossaryListUI';
+import {GlossaryListUI} from './glossaryListUI';
 import React from 'react';
 import {EditorRuntime, Glossary} from './types';
 jest.mock('./types', () => ({

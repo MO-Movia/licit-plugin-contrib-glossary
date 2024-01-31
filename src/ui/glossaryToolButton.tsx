@@ -6,12 +6,14 @@ import {
   PointerSurface,
 } from '@modusoperandi/licit-ui-commands';
 
-export class GlossaryToolButton extends React.PureComponent {
-  props: PointerSurfaceProps & {
-    icon?: string | React.ReactNode | null;
-    label?: string | React.ReactNode | null;
-  };
+type GlossaryToolButtonProps = PointerSurfaceProps & {
+  icon?: string | React.ReactNode | null;
+  label?: string | React.ReactNode | null;
+};
 
+
+export class GlossaryToolButton extends React.PureComponent {
+  declare props: GlossaryToolButtonProps;
   render() {
     const {icon, label, className, title, ...pointerProps} = this.props;
     const klass = cx(className, 'czi-custom-button', {
@@ -28,4 +30,4 @@ export class GlossaryToolButton extends React.PureComponent {
   }
 }
 
-export default GlossaryToolButton;
+

@@ -1,6 +1,6 @@
 import { DOMOutputSpec, Node, NodeSpec } from 'prosemirror-model';
 
-const GlossaryNodeSpec: NodeSpec = {
+export const GlossaryNodeSpec: NodeSpec = {
   group: 'inline',
   content: 'text*',
   inline: true,
@@ -63,4 +63,4 @@ function toDOM(node: Node): DOMOutputSpec {
 
   return ['glossary', attrs, 0];
 }
-export default GlossaryNodeSpec;
+
