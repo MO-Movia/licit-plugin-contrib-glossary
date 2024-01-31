@@ -7,6 +7,7 @@ import {EditorView} from 'prosemirror-view';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
 import {EditorRuntime} from './types';
 import {GlossaryListUI} from './glossaryListUI';
+import {Transform} from 'prosemirror-transform';
 
 class TestPlugin extends Plugin {
   constructor() {
@@ -16,7 +17,7 @@ class TestPlugin extends Plugin {
   }
 }
 describe('GlossaryPlugin', () => {
-  let plugin;
+  let plugin: GlossaryPlugin;
 
   beforeEach(() => {
     plugin = new GlossaryPlugin();
@@ -112,5 +113,22 @@ describe('GlossaryPlugin', () => {
     gm.isEnabled(state, view);
     gm.createGlossaryObject(view);
     expect(selectedText).toBe('hello');
+  });
+
+  it('should render label', () => {
+    const gm = new GlossaryCommand();
+    expect(gm.renderLabel()).toBeNull();
+  });
+
+  it('should be active', () => {
+    const gm = new GlossaryCommand();
+    expect(gm.isActive()).toBeTruthy();
+  });
+
+  it('should execute custom', () => {
+    const gm = new GlossaryCommand();
+    const mockState = {} as unknown as EditorState;
+    const mockTr = {} as unknown as Transform;
+    expect(gm.executeCustom(mockState, mockTr)).toBe(mockTr);
   });
 });

@@ -3,16 +3,13 @@
 import {GlossaryPlugin} from './index';
 import {schema, builders} from 'prosemirror-test-builder';
 import {Plugin, PluginKey, EditorState, TextSelection} from 'prosemirror-state';
-import {addListNodes} from 'prosemirror-schema-list';
 import {EditorView} from 'prosemirror-view';
-import {DOMSerializer, Node} from 'prosemirror-model';
-import {Schema, MarkType} from 'prosemirror-model';
+import {Node, Schema} from 'prosemirror-model';
 import {GlossaryView} from './glossaryView';
 import {GlossaryCommand} from './glossaryCommand';
-import {node} from 'webpack';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
 import {GlossaryListUI} from './glossaryListUI';
-import {EditorRuntime, Glossary} from './types';
+import {EditorRuntime} from './types';
 
 class TestPlugin extends Plugin {
   constructor() {

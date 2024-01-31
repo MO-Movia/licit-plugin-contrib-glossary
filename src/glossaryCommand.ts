@@ -150,4 +150,16 @@ export class GlossaryCommand extends UICommand {
       'image' !== (state.tr.selection as NodeSelection)?.node?.type?.name
     );
   };
+
+  renderLabel() {
+    return null;
+  }
+
+  isActive(): boolean {
+    return true;
+  }
+
+  executeCustom(_state: EditorState, tr: Transform): Transform {
+    return tr;
+  }
 }
