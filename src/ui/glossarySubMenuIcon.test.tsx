@@ -10,7 +10,7 @@ it('should render the component', () => {
         type: 'type',
         title: 'title',
     };
-    wrapper.title = 'title';
+    wrapper.props.title = 'title';
     GlossarySubMenuIcon.get('');
     expect(wrapper).toBeDefined();
 });
