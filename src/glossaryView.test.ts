@@ -149,7 +149,6 @@ describe('Glossary Plugin Extended', () => {
     const mockOpen = jest.spyOn(gView, 'open');
     gView.showSourceText(mockEvent);
     (gView.node.attrs as Record<string, boolean>).term = false;
-    gView.onCancel(view);
     gView.deleteGlossaryNode(view);
     expect(mockOpen).toHaveBeenCalledWith(mockEvent);
   });

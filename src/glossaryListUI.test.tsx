@@ -83,7 +83,7 @@ describe('GlossaryListUI component init', () => {
   it('should call updateState method with null param', () => {
     const wrapper = new GlossaryListUI({...gPropo});
     const res = null;
-    expect(wrapper.updateState(res)).toBeUndefined();
+    expect(wrapper.updateState(res as unknown as Glossary[])).toBeUndefined();
   });
 
   it('should call _cancel', () => {
@@ -92,14 +92,14 @@ describe('GlossaryListUI component init', () => {
     wrapper._cancel();
     expect(closeSpy).toBeDefined();
   });
-  
+
   it('should call _save', () => {
     const wrapper = new GlossaryListUI({...gPropo});
-    expect(wrapper._save).toBeDefined()
+    expect(wrapper._save).toBeDefined();
   });
-  
+
   it('should call updateState method', () => {
-    const wrapper = new GlossaryListUI({...gPropo})
+    const wrapper = new GlossaryListUI({...gPropo});
     const res = [
       {
         id: '1',
