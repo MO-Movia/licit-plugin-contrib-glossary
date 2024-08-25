@@ -25,8 +25,11 @@ export class GlossaryListUI extends React.PureComponent<
     super(props);
     this.state = {
       ...props,
-      glossaryObject,
-      glossaries,
+      glossaryObject:props.glossaryObject,
+      glossaries:props.glossaries,
+      isGlossary:props.isGlossary,
+      selectedRowRefID:props.selectedRowRefID,
+      term:props.term
     };
   }
 
@@ -108,7 +111,7 @@ export class GlossaryListUI extends React.PureComponent<
                   </tr>
                 </thead>
                 <tbody className="molcit-citationbody">
-                  {this.state.glossaries.map((item) => (
+                  {this.state.glossaries?.map((item) => (
                     <tr
                       className={
                         this.state.selectedRowRefID === item.id

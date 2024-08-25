@@ -275,7 +275,7 @@ describe('GlossaryPlugin', () => {
       expect(_test).toBeFalsy();
     });
     it('should call initKeyCommands', () => {
-      expect(plugin.initKeyCommands());
+      expect(plugin.initKeyCommands()).toBeDefined();
     });
   });
 });
