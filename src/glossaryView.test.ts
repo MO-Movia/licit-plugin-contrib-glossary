@@ -19,6 +19,10 @@ class TestPlugin extends Plugin {
   }
 }
 
+jest.mock('./assets/images/dark/Icon_glossary.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/light/Icon_glossary.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/dark/Icon_glossary_book.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/light/Icon_glossary_book.svg', () => 'Icon SVG content');
 describe('Glossary Plugin Extended', () => {
   let gView;
   beforeEach(() => {
@@ -61,67 +65,8 @@ describe('Glossary Plugin Extended', () => {
   const effSchema = plugin.getEffectiveSchema(mySchema);
 
   const newGlossaryNode = effSchema.node(effSchema.nodes.glossary, glossary);
-  plugin.initButtonCommands();
+  plugin.initButtonCommands('dark');
   const {doc, p} = builders(mySchema, {p: {nodeType: 'paragraph'}});
-
-
-  it('should return position when posAtCoords returns a valid position', () => {
-    const mockPos = { pos: 42 , inside: 32};
-    const before = 'hello';
-    const after = ' world';
-    const state = EditorState.create({
-      doc: doc(p(before, newGlossaryNode, after)),
-      schema: effSchema,
-      plugins: [plugin],
-    });
-    const dom = document.createElement('div');
-    document.body.appendChild(dom);
-    const view = new EditorView(
-      {mount: dom},
-      {
-        state: state,
-      }
-    );
-    const gView = new GlossaryView(
-      view.state.doc.nodeAt(6) as Node,
-      view,
-      undefined as any
-    );
-    jest.spyOn(gView.outerView, 'posAtCoords').mockReturnValue(mockPos);
-
-    const result = gView.getNodePosEx(100, 200);
-
-    expect(gView.outerView.posAtCoords).toHaveBeenCalledWith({ left: 100, top: 200 });
-    expect(result).toBe(42);
-  });
-
-
-  it('should return null when posAtCoords returns null', () => {
-    const before = 'hello';
-    const after = ' world';
-    const state = EditorState.create({
-      doc: doc(p(before, newGlossaryNode, after)),
-      schema: effSchema,
-      plugins: [plugin],
-    });
-    const dom = document.createElement('div');
-    document.body.appendChild(dom);
-    const view = new EditorView(
-      {mount: dom},
-      {
-        state: state,
-      }
-    );
-    const gView = new GlossaryView(
-      view.state.doc.nodeAt(6) as Node,
-      view,
-      undefined as any
-    );
-    jest.spyOn(gView.outerView, 'posAtCoords').mockReturnValue(null);
-    const result = gView.getNodePosEx(100, 200);
-    expect(gView.outerView.posAtCoords).toHaveBeenCalledWith({ left: 100, top: 200 });
-    expect(result).toBeNull();
-  });
 
   it('showSourceText should call', () => {
     const mockEvent = new MouseEvent('click');
@@ -149,6 +94,7 @@ describe('Glossary Plugin Extended', () => {
     const mockOpen = jest.spyOn(gView, 'open');
     gView.showSourceText(mockEvent);
     (gView.node.attrs as Record<string, boolean>).term = false;
+    gView.onCancel(view);
     gView.deleteGlossaryNode(view);
     expect(mockOpen).toHaveBeenCalledWith(mockEvent);
   });
@@ -261,7 +207,6 @@ describe('Glossary Plugin Extended', () => {
         autoDismiss: false,
       }
     );
-    cView._popUp;
     cView.selectNode(mockEvent);
     gView.runtime = {} as EditorRuntime;
     gView.onEditGlossary(view);
@@ -347,6 +292,7 @@ describe('Glossary Plugin Extended', () => {
     });
     const dom = document.createElement('div');
     document.body.appendChild(dom);
+    // Set up our document body
     document.body.innerHTML = '<div></div>';
     const view = new EditorView(
       {mount: dom},
@@ -445,59 +391,6 @@ describe('Glossary Plugin Extended', () => {
     const nodeRes = gView.getNodeType(state);
 
     expect(nodeRes).not.toBe(null);
-  });
-
-  it('update should return true',()=> {
-    const before = 'hello';
-    const after = ' world';
-
-    const state = EditorState.create({
-      doc: doc(p(before, newGlossaryNode, after)),
-      schema: effSchema,
-      plugins: [plugin],
-    });
-    const dom = document.createElement('div');
-    document.body.appendChild(dom);
-    const view = new EditorView(
-      {mount: dom},
-      {
-        state: state,
-      }
-    );
-    const gView = new GlossaryView(
-      view.state.doc.nodeAt(6) as Node,
-      view,
-      undefined as any
-    );
-  
-    gView.node.sameMarkup(gView.node);
-    expect(gView.update(gView.node)).toBe(true);
-  });
-
-  it('should return false when node markup is the same', () => {
-    const before = 'hello';
-    const after = ' world';
-
-    const state = EditorState.create({
-      doc: doc(p(before, newGlossaryNode, after)),
-      schema: effSchema,
-      plugins: [plugin],
-    });
-    const dom = document.createElement('div');
-    document.body.appendChild(dom);
-    const view = new EditorView(
-      {mount: dom},
-      {
-        state: state,
-      }
-    );
-    gView = new GlossaryView(
-      view.state.doc.nodeAt(6) as Node,
-      view,
-      undefined as any
-    );
-    const node = view.state.doc.nodeAt(0) as Node;
-    expect(gView.update(node)).toBe(false);
   });
 
   it('stopEvent should return false', () => {

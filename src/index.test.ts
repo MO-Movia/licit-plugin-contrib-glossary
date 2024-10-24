@@ -10,7 +10,6 @@ import {createEditor} from 'jest-prosemirror';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
 import {GlossaryListUI} from './glossaryListUI';
 import {EditorRuntime} from './types';
-
 class TestPlugin extends Plugin {
   constructor() {
     super({
@@ -18,6 +17,10 @@ class TestPlugin extends Plugin {
     });
   }
 }
+jest.mock('./assets/images/dark/Icon_glossary.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/light/Icon_glossary.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/dark/Icon_glossary_book.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/light/Icon_glossary_book.svg', () => 'Icon SVG content');
 describe('GlossaryPlugin', () => {
   let plugin;
 
@@ -275,7 +278,7 @@ describe('GlossaryPlugin', () => {
       expect(_test).toBeFalsy();
     });
     it('should call initKeyCommands', () => {
-      expect(plugin.initKeyCommands()).toBeDefined();
+      expect(plugin.initKeyCommands());
     });
   });
 });

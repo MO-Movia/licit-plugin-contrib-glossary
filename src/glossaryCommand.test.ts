@@ -16,6 +16,10 @@ class TestPlugin extends Plugin {
     });
   }
 }
+jest.mock('./assets/images/dark/Icon_glossary.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/light/Icon_glossary.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/dark/Icon_glossary_book.svg', () => 'Icon SVG content');
+jest.mock('./assets/images/light/Icon_glossary_book.svg', () => 'Icon SVG content');
 describe('GlossaryPlugin', () => {
   let plugin: GlossaryPlugin;
 
@@ -114,7 +118,6 @@ describe('GlossaryPlugin', () => {
     gm.createGlossaryObject(view);
     expect(selectedText).toBe('hello');
   });
-
 
   it('should render label', () => {
     const gm = new GlossaryCommand();

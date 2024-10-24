@@ -8,7 +8,7 @@ import {
 import {GlossaryNodeSpec} from './glossaryNodeSpec';
 import {GlossaryView} from './glossaryView';
 import { GlossaryCommand } from './glossaryCommand';
-
+import { DarkThemeIcon, LightThemeIcon,DarkThemeIconBook,LightThemeIconBook } from './images';
 export const GLOSSARY = 'glossary';
 export const ACRONYM = 'acronym';
 
@@ -55,12 +55,27 @@ export class GlossaryPlugin extends Plugin {
     );
   }
 
-  initButtonCommands(): unknown {
-    return {
-      '[menu_book] Glossary': new GlossaryCommand(true),
-      '[library_books] Acronym': new GlossaryCommand(false),
-    };
-  }
+  initButtonCommands(theme: string): unknown {
+    let image = null;
+    let imageBook = null;
+    if ('light' == theme) {
+      image = LightThemeIcon;
+      imageBook=LightThemeIconBook;
+    } else {
+      image = DarkThemeIcon;
+      imageBook=DarkThemeIconBook;
+    }
+
+      return {
+        [`[${image}] Glossary`]: new GlossaryCommand(true),
+         [`[${imageBook}] Acronym`]: new GlossaryCommand(false),
+      };
+    }
+    // return {
+    //   '[menu_book] Glossary': new GlossaryCommand(true),
+    //   '[library_books] Acronym': new GlossaryCommand(false),
+    // };
+
 }
 
 export function bindGlossaryView(

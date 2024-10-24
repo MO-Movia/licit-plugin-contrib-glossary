@@ -1,9 +1,12 @@
+import Enzyme, {shallow} from 'enzyme';
+import Adapter from '@cfaester/enzyme-adapter-react-18';
 import {GlossaryListUI} from './glossaryListUI';
+import React from 'react';
 import {EditorRuntime, Glossary} from './types';
 jest.mock('./types', () => ({
   getGlossary: jest.fn(),
 }));
-
+Enzyme.configure({adapter: new Adapter()});
 describe('GlossaryListUI component init', () => {
   const gPropo = {
     glossaries: [],
@@ -61,8 +64,9 @@ describe('GlossaryListUI component init', () => {
         },
       } as EditorRuntime,
     };
-    const wrapper = new GlossaryListUI({...gPropo});
-    expect(wrapper).toBeDefined();
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
+    expect(listUIRender).toBeDefined();
   });
   it('should render the GlossaryListUI component with Abbreviation', () => {
     const gPropo = {
@@ -76,30 +80,38 @@ describe('GlossaryListUI component init', () => {
       },
       runtime: {} as EditorRuntime,
     };
-    const wrapper = new GlossaryListUI({...gPropo});
-    expect(wrapper).toBeDefined();
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
+    expect(listUIRender).toBeDefined();
   });
 
   it('should call updateState method with null param', () => {
-    const wrapper = new GlossaryListUI({...gPropo});
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
     const res = null;
-    expect(wrapper.updateState(res as unknown as Glossary[])).toBeUndefined();
+    expect(listUIRender.updateState(res)).toBeUndefined();
   });
 
   it('should call _cancel', () => {
-    const wrapper = new GlossaryListUI({...gPropo});
-    const closeSpy = jest.fn();
-    wrapper._cancel();
-    expect(closeSpy).toBeDefined();
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
+    listUIRender.props = {close: () => undefined};
+    const spy = jest.spyOn(listUIRender.props, 'close');
+    listUIRender._cancel();
+    expect(spy).toHaveBeenCalled();
   });
-
   it('should call _save', () => {
-    const wrapper = new GlossaryListUI({...gPropo});
-    expect(wrapper._save).toBeDefined();
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
+    listUIRender.props = {close: () => undefined};
+    listUIRender.state = {};
+    const spy = jest.spyOn(listUIRender.props, 'close');
+    listUIRender._save();
+    expect(spy).toHaveBeenCalledWith({});
   });
-
   it('should call updateState method', () => {
-    const wrapper = new GlossaryListUI({...gPropo});
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
     const res = [
       {
         id: '1',
@@ -112,16 +124,18 @@ describe('GlossaryListUI component init', () => {
         description: 'Indian Institute of Technology',
       },
     ];
-    wrapper.updateState(res);
-    expect(wrapper.updateState(res)).toBeUndefined();
+    listUIRender.updateState(res);
+    expect(listUIRender.state.glossaries).toEqual(res);
   });
 
   it('should set state based on the onRowClick method with undefined value', () => {
-    const wrapper = new GlossaryListUI({...gPropo});
-    expect(wrapper.onRowClick('test')).toBeUndefined();
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
+    expect(listUIRender.onRowClick(undefined)).toBeUndefined();
   });
   it('should call updateState method', () => {
-    const wrapper = new GlossaryListUI({...gPropo});
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
     const res = [
       {
         id: '1',
@@ -137,12 +151,13 @@ describe('GlossaryListUI component init', () => {
     const authorEle = document.createElement('input');
     authorEle.id = 'termtxt';
     document.body.appendChild(authorEle);
-    wrapper.updateState(res);
-    expect(wrapper.onSearchGlossary()).toBe(undefined);
+    listUIRender.updateState(res);
+    expect(listUIRender.onSearchGlossary()).toBe(undefined);
   });
   it('should set state based on the onRowClick method', () => {
-    const wrapper = new GlossaryListUI({...gPropo});
-    wrapper.onRowClick('1');
-    expect(wrapper.state.selectedRowRefID).toEqual('3');
+    const wrapper = shallow(<GlossaryListUI {...gPropo} />);
+    const listUIRender = wrapper.instance();
+    listUIRender.onRowClick('1');
+    expect(listUIRender.state.selectedRowRefID).toEqual('1');
   });
 });

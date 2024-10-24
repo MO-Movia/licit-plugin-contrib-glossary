@@ -39,13 +39,6 @@ export class GlossaryCommand extends UICommand {
   }
 
   createGlossaryObject(editorView: EditorView) {
-    let runtime;
-    if (typeof this.runtime !== 'undefined') {
-      runtime = this.runtime;
-    } else {
-      runtime = editorView['runtime'];
-    }
-
     return {
       isGlossary: this._isGlossary,
       selectedRowRefID: 1,
@@ -54,13 +47,16 @@ export class GlossaryCommand extends UICommand {
         : editorView.state.doc
             .cut(editorView.state.selection.from, editorView.state.selection.to)
             .textContent.trim(),
-      mode: 1, // 0 = new, 1 = modify, 2 = delete
+      mode: 1, //0 = new , 1- modify, 2- delete
       editorView: editorView,
-      runtime: runtime,
+      runtime:
+        typeof this.runtime !== 'undefined'
+          ? this.runtime
+          : typeof this.runtime !== 'undefined'
+          ? this.runtime
+          : editorView['runtime'],
     };
   }
-
-
 
   waitForUserInput = (
     state: EditorState,
