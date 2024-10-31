@@ -29,7 +29,7 @@
 }
 
 .czi-editor-frameset .glossary {
-  cursor: auto;
+  cursor: pointer;
   display: inline-block;
   line-height: 10px;
   position: relative;
@@ -79,6 +79,7 @@
 }
 
 .czi-editor-frameset .molcit-glossary-tooltip-content {
+  cursor: grab;
   background-color: white !important;
   color: black;
   display: inline-block;
@@ -87,15 +88,16 @@
   font-style: normal;
   font-weight: 100;
   line-height: 138%;
-  max-width: max-content;
+  max-width: 400px;
+  max-height: 1000px;
   padding: 5px;
   text-align: left;
   text-decoration: none;
-  width: 400px;
 }
 
 .czi-editor-frameset .molcit-glossary-tooltip {
   background: transparent !important;
+  box-shadow: 0 3px 6px rgba(0 0 0 / 16%), 0 3px 6px rgba(0 0 0 / 23%);
   border-radius: 2px;
   box-sizing: border-box;
   cursor: auto;
@@ -107,7 +109,6 @@
   position: absolute;
   text-align: left;
   top: calc(100% + 10px);
-  width: 400px;
   z-index: 9999;
   user-select: none;
 }
