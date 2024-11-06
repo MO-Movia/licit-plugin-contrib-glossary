@@ -5,8 +5,7 @@ import {GlossarySubMenuIcon} from './ui/glossarySubMenuIcon';
 import './ui/glossary.css';
 
 type GlossarysubMenuProps = {
-  editorView: EditorView;
-  onCancel: (view: EditorView) => void;
+  editorView: EditorView; 
   onEdit: (view: EditorView) => void;
   onRemove: (view: EditorView) => void;
   onMouseOut: () => void;
@@ -15,8 +14,6 @@ type GlossarysubMenuProps = {
 export class GlossarySubMenu extends React.PureComponent{
 
   declare props: GlossarysubMenuProps;
-  _unmounted = false;
-
   state = {
     hidden: false,
   };
@@ -26,7 +23,7 @@ export class GlossarySubMenu extends React.PureComponent{
     const disabled = editorView['readOnly'];
 
     return (
-      <div className="molcit-glossary-submenu" onMouseLeave={onMouseOut}>
+      <div className="molcit-glossary-submenu" onMouseLeave={onMouseOut} role="menu" tabIndex={-1}>
         <div className="molcit-glossary-submenu-body">
           <div className="molcit-glossary-submenu-row">
             <GlossaryToolButton

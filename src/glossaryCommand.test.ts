@@ -115,6 +115,7 @@ describe('GlossaryPlugin', () => {
     expect(selectedText).toBe('hello');
   });
 
+
   it('should render label', () => {
     const gm = new GlossaryCommand();
     expect(gm.renderLabel()).toBeNull();
