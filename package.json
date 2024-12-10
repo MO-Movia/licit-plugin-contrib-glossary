@@ -82,5 +82,8 @@
     "*.json": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "@mo/maw-smart-document": "^3.2.0"
   }
 }

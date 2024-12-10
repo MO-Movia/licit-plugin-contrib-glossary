@@ -1,5 +1,6 @@
 import {DOMSerializer, Node} from 'prosemirror-model';
 import {EditorView} from 'prosemirror-view';
+import {RuntimeService} from '@mo/blade-editor';
 import {
   createPopUp,
   PopUpHandle,
@@ -9,8 +10,10 @@ import './ui/glossary.css';
 import {Transaction} from 'prosemirror-state';
 import {Transform} from 'prosemirror-transform';
 import {GlossarySubMenu} from './glossarySubMenu';
-import {GlossaryListUI} from './glossaryListUI';
 import {EditorRuntime} from './types';
+import {AcronymItem, GlossaryItem} from '@mo/maw-smart-document';
+import {GlossaryAcronymManagementComponent} from '@mo/maw-smart-document';
+import { GlossaryCommand } from './glossaryCommand';
 
 type CBFn = () => void;
 const GLOSSARY = 'glossary';
@@ -23,6 +26,10 @@ export type Style = {
 };
 
 export class GlossaryView {
+  bladeruntime?: RuntimeService;
+  glssryacrnym: GlossaryAcronymManagementComponent;
+  glssryCmmnd: GlossaryCommand;
+
   node: Node = null;
   outerView: EditorView = null;
   getPos = null;
@@ -31,7 +38,14 @@ export class GlossaryView {
   dom: globalThis.Node = null;
   offsetLeft: Element;
   runtime: EditorRuntime;
-  constructor(node: Node, view: EditorView, getPos: CBFn) {
+  item: GlossaryItem | AcronymItem;
+  constructor(
+    node: Node,
+    view: EditorView,
+    getPos: CBFn,
+    runtime: RuntimeService
+  ) {
+    this.bladeruntime = runtime;
     // We'll need these later
     this.node = node;
     this.outerView = view;
@@ -115,27 +129,83 @@ export class GlossaryView {
       runtime: this.runtime,
     };
   }
+  isAcronymItem(item: GlossaryItem | AcronymItem): item is AcronymItem {
+    return (item as AcronymItem).description !== undefined;
+  }
 
-  onEditGlossary = (view: EditorView): void => {
-    this._popUp_subMenu?.close('');
+  // onEditGlossary = (view: EditorView, item: GlossaryItem | AcronymItem): void => {
+  //   if ('description' in item) {
+  //     const acronymItem: AcronymItem = {
+  //       id: this.node.attrs.id,
+  //       term: this.node.attrs.term,
+  //       definition: this.node.attrs.definition,
+  //       description: this.node.attrs.description,
+  //     };
+  //     console.log(acronymItem);
+  //     this.bladeruntime.editGlossary(acronymItem);
+  //   } else {
+  //     const glossaryItem: GlossaryItem = {
+  //       id: this.node.attrs.id,
+  //       term: this.node.attrs.term,
+  //       definition: this.node.attrs.description,
+  //     };
+  //     console.log(glossaryItem);
+  //     this.bladeruntime.editGlossary(glossaryItem);
+  //   }
+  // };
 
-    this._popUp = createPopUp(
-      GlossaryListUI,
-      this.createGlossaryObject(view, 2),
-      {
-        modal: true,
-        IsChildDialog: false,
-        autoDismiss: false,
-        onClose: (val) => {
-          if (this._popUp) {
-            this._popUp = null;
-            if (undefined !== val) {
-              this.updateGlossaryDetails(view, val);
-            }
-          }
-        },
-      }
-    );
+  // onEditGlossary = (
+  //   view: EditorView,
+  //   item: GlossaryItem | AcronymItem
+  // ): void => {
+  //   if (this.isAcronymItem(item)) {
+  //     // Use the isAcronymItem function to check
+  //     // Handle AcronymItem
+  //     const data = {
+  //       id: this.node.attrs.id,
+  //       term: this.node.attrs.term,
+  //       definition: this.node.attrs.definition,
+  //       description: this.node.attrs.description, // Specific to AcronymItem
+  //     };
+  //     console.log(data);
+  //     this.bladeruntime.editGlossary(data);
+  //   } else {
+  //     // Handle GlossaryItem
+  //     const data = {
+  //       id: this.node.attrs.id,
+  //       term: this.node.attrs.term,
+  //       definition: this.node.attrs.definition, // GlossaryItem does not have description
+  //     };
+  //     console.log(data);
+  //     this.bladeruntime.editGlossary(data);
+  //   }
+  // };
+
+  onEditGlossary = (
+    view: EditorView,
+    item: GlossaryItem | AcronymItem
+  ): void => {
+    if (this.isAcronymItem(this.node.attrs as AcronymItem)) {
+      // Use the isAcronymItem function to check
+      // Handle AcronymItem
+      const data = {
+        id: this.node.attrs.id,
+        term: this.node.attrs.term,
+        definition: this.node.attrs.definition,
+        description: this.node.attrs.description, // Specific to AcronymItem
+      };
+      console.log(data);
+      this.bladeruntime.editGlossary(data);
+    } else {
+      // Handle GlossaryItem
+      const data = {
+        id: this.node.attrs.id,
+        term: this.node.attrs.term,
+        definition: this.node.attrs.definition, // GlossaryItem does not have description
+      };
+      console.log(data);
+      this.bladeruntime.editGlossary(data);
+    }
   };
 
   updateGlossaryDetails(view: EditorView, glossary): void {
@@ -159,24 +229,24 @@ export class GlossaryView {
   }
 
   deleteGlossaryNode = (view: EditorView): void => {
-    const {state} = view;
+    const {state, dispatch} = view;
     const glossaryNode = state.tr.doc.nodeAt(this.node.attrs.from);
     const nodeType = glossaryNode?.type?.name;
-    if (glossaryNode && 'glossary' === nodeType) {
-      const node = state.schema.text(this.node.attrs.term);
-      const tr = state.tr.replaceRangeWith(
-        this.node.attrs.from,
-        this.node.attrs.to,
-        node
+
+    if (glossaryNode && nodeType === 'glossary') {
+      const tr = state.tr.replaceWith(
+        this.getPos(),
+        this.getPos() + glossaryNode.nodeSize,
+        state.schema.text(this.node.attrs.term)
       );
+      dispatch(tr);
       const glossarySpan = document.getElementById(
         this.node.attrs.term + this.node.attrs.id + this.node.attrs.from
       );
+
       if (glossarySpan) {
-        glossarySpan.style.color = 'black';
-        glossarySpan.style.textDecoration = 'none';
+        glossarySpan.remove();
       }
-      view.dispatch(tr);
     }
   };
 
@@ -228,7 +298,7 @@ export class GlossaryView {
     const tooltip = this.dom.appendChild(document.createElement('div'));
     tooltip.className = 'molcit-glossary-tooltip';
     const ttContent = tooltip.appendChild(document.createElement('div'));
-    ttContent.innerHTML = this.node.attrs.description;
+    ttContent.innerHTML = this.node.attrs.definition;
     ttContent.className = 'ProseMirror molcit-glossary-tooltip-content';
     this.setContentRight(e, parent, tooltip, ttContent);
     if (window.screen.availHeight - e.clientY < 170 && ttContent.style.right) {

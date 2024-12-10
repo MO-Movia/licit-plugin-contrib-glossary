@@ -8,6 +8,7 @@ import {
 import {GlossaryNodeSpec} from './glossaryNodeSpec';
 import {GlossaryView} from './glossaryView';
 import { GlossaryCommand } from './glossaryCommand';
+import { RuntimeService } from '@mo/blade-editor';
 
 export const GLOSSARY = 'glossary';
 export const ACRONYM = 'acronym';
@@ -22,7 +23,10 @@ export const KEY_ACRONYM = makeKeyMapWithCommon(
 );
 
 export class GlossaryPlugin extends Plugin {
-  constructor() {
+  constructor(
+    public RuntimeService: RuntimeService,
+    public isInEditor?: boolean
+  ) {
     super({
       key: new PluginKey('GlossaryPlugin'),
       props: {
@@ -49,7 +53,7 @@ export class GlossaryPlugin extends Plugin {
   initKeyCommands(): unknown {
     return createKeyMapPlugin(
       {
-        [KEY_GLOSSARY.common]: new GlossaryCommand(true).waitForUserInput,
+        [KEY_GLOSSARY.common]: new GlossaryCommand(true,this.RuntimeService).waitForUserInput,
       },
       'GlossaryKeyMap'
     );
@@ -57,8 +61,8 @@ export class GlossaryPlugin extends Plugin {
 
   initButtonCommands(): unknown {
     return {
-      '[menu_book] Glossary': new GlossaryCommand(true),
-      '[library_books] Acronym': new GlossaryCommand(false),
+      '[menu_book] Glossary': new GlossaryCommand(true,this.RuntimeService),
+      '[library_books] Acronym': new GlossaryCommand(false,this.RuntimeService),
     };
   }
 }
@@ -68,11 +72,11 @@ export function bindGlossaryView(
   view: EditorView,
   curPos: boolean | (() => number)
 ): GlossaryViewExt {
-  return new GlossaryViewExt(node, view, curPos);
+  return new GlossaryViewExt(node, view, curPos, this.RuntimeService);
 }
 
 class GlossaryViewExt extends GlossaryView {
-  constructor(node: Node, view: EditorView, getCurPos) {
-    super(node, view, getCurPos);
+  constructor(node: Node, view: EditorView, getCurPos, runtimeServices) {
+    super(node, view, getCurPos, runtimeServices);
   }
 }
