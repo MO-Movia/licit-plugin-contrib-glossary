@@ -30,6 +30,7 @@
 
 .czi-editor-frameset .glossary {
   cursor: pointer;
+  cursor: pointer;
   display: inline-block;
   line-height: 10px;
   position: relative;
@@ -109,7 +110,6 @@
   position: absolute;
   text-align: left;
   top: calc(100% + 10px);
-  /* width: 400px; */
   z-index: 9999;
   user-select: none;
 }
