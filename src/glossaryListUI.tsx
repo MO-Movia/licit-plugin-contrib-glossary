@@ -2,7 +2,6 @@
 // UI for Citation dialog
 import * as React from 'react';
 import {EditorRuntime, Glossary} from './types';
-import './ui/glossary.css';
 
 type GlossaryListProps = {
   glossaries: Glossary[];
