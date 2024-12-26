@@ -5,7 +5,6 @@ import {
   PopUpHandle,
   atAnchorTopCenter,
 } from '@modusoperandi/licit-ui-commands';
-import './ui/glossary.css';
 import {Transaction} from 'prosemirror-state';
 import {Transform} from 'prosemirror-transform';
 import {GlossarySubMenu} from './glossarySubMenu';

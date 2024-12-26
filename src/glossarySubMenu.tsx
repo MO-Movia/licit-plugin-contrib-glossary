@@ -2,10 +2,9 @@ import * as React from 'react';
 import {EditorView} from 'prosemirror-view';
 import {GlossaryToolButton} from './ui/glossaryToolButton';
 import {GlossarySubMenuIcon} from './ui/glossarySubMenuIcon';
-import './ui/glossary.css';
 
 type GlossarysubMenuProps = {
-  editorView: EditorView; 
+  editorView: EditorView;
   onEdit: (view: EditorView) => void;
   onRemove: (view: EditorView) => void;
   onMouseOut: () => void;
