@@ -1,7 +1,7 @@
 // [FS] IRAD-1251 2021-03-10
 // UI for Citation dialog
 import * as React from 'react';
-import {EditorRuntime, Glossary} from './types';
+import {Glossary} from './types';
 
 type GlossaryListProps = {
   glossaries: Glossary[];
@@ -10,7 +10,8 @@ type GlossaryListProps = {
   isGlossary: boolean;
   term: string;
   close: (val?) => void;
-  runtime: EditorRuntime;
+  // eslint-disable-next-line
+  runtime: any;
 };
 let glossaryObject: Glossary;
 let selectedRowRefID = '';

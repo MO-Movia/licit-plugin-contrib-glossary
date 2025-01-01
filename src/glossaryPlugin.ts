@@ -22,7 +22,8 @@ export const KEY_ACRONYM = makeKeyMapWithCommon(
 );
 
 export class GlossaryPlugin extends Plugin {
-  constructor() {
+  _runtime = null;
+  constructor(runtime) {
     super({
       key: new PluginKey('GlossaryPlugin'),
       props: {
@@ -30,6 +31,7 @@ export class GlossaryPlugin extends Plugin {
       },
       state: {
         init(_config, _state) {
+          (this as GlossaryPlugin)._runtime = runtime;
           this.spec.props.nodeViews[GLOSSARY] = bindGlossaryView.bind(this);
         },
         apply(_tr, _prev, _, _newState) {
@@ -49,7 +51,7 @@ export class GlossaryPlugin extends Plugin {
   initKeyCommands(): unknown {
     return createKeyMapPlugin(
       {
-        [KEY_GLOSSARY.common]: new GlossaryCommand(true).waitForUserInput,
+        [KEY_GLOSSARY.common]: new GlossaryCommand(true, this._runtime).waitForUserInput,
       },
       'GlossaryKeyMap'
     );
@@ -57,8 +59,7 @@ export class GlossaryPlugin extends Plugin {
 
   initButtonCommands(): unknown {
     return {
-      '[menu_book] Glossary': new GlossaryCommand(true),
-      '[library_books] Acronym': new GlossaryCommand(false),
+      '[menu_book] Glossary': new GlossaryCommand(true, this._runtime)
     };
   }
 }

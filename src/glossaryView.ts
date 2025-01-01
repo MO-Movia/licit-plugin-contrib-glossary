@@ -1,15 +1,14 @@
-import {DOMSerializer, Node} from 'prosemirror-model';
-import {EditorView} from 'prosemirror-view';
 import {
+  atAnchorTopCenter,
   createPopUp,
   PopUpHandle,
-  atAnchorTopCenter,
 } from '@modusoperandi/licit-ui-commands';
-import {Transaction} from 'prosemirror-state';
-import {Transform} from 'prosemirror-transform';
-import {GlossarySubMenu} from './glossarySubMenu';
-import {GlossaryListUI} from './glossaryListUI';
-import {EditorRuntime} from './types';
+import { DOMSerializer, Node } from 'prosemirror-model';
+import { Transaction } from 'prosemirror-state';
+import { Transform } from 'prosemirror-transform';
+import { EditorView } from 'prosemirror-view';
+import { AcronymItem, GlossaryItem } from './glossaryCommand';
+import { GlossarySubMenu } from './glossarySubMenu';
 
 type CBFn = () => void;
 const GLOSSARY = 'glossary';
@@ -29,12 +28,20 @@ export class GlossaryView {
   _popUp_subMenu: PopUpHandle | null = null;
   dom: globalThis.Node = null;
   offsetLeft: Element;
-  runtime: EditorRuntime;
-  constructor(node: Node, view: EditorView, getPos: CBFn) {
+  // eslint-disable-next-line
+  runtime: any;
+  item: GlossaryItem | AcronymItem;
+  constructor(
+    node: Node,
+    view: EditorView,
+    getPos: CBFn,
+    // eslint-disable-next-line
+    runtime?: any
+  ) {
     // We'll need these later
     this.node = node;
     this.outerView = view;
-    this.runtime = view['runtime'];
+    this.runtime = runtime;
     this.getPos = getPos;
     const spec = DOMSerializer.renderSpec(
       view.dom.ownerDocument,
@@ -114,27 +121,41 @@ export class GlossaryView {
       runtime: this.runtime,
     };
   }
+  onEditGlossary = async (
+    view: EditorView,
+  ): Promise<void> => {
+    // eslint-disable-next-line
+    let data: any;
+    if ('description' in this.node.attrs && this.node.attrs.description !== null) {
+      // Handle AcronymItem
+      data = {
+        id: this.node.attrs.id,
+        term: this.node.attrs.term,
+        definition: this.node.attrs.definition,
+        description: this.node.attrs.description,
+      };
+    } else {
+      // Handle GlossaryItem
+      data = {
+        id: this.node.attrs.id,
+        term: this.node.attrs.term,
+        definition: this.node.attrs.definition,
+      };
+    }
+    try {
+      const runtime = view?.['runtime'];
+      const updatedData = await runtime.glossaryService.editGlossary(data);
 
-  onEditGlossary = (view: EditorView): void => {
-    this._popUp_subMenu?.close('');
-
-    this._popUp = createPopUp(
-      GlossaryListUI,
-      this.createGlossaryObject(view, 2),
-      {
-        modal: true,
-        IsChildDialog: false,
-        autoDismiss: false,
-        onClose: (val) => {
-          if (this._popUp) {
-            this._popUp = null;
-            if (undefined !== val) {
-              this.updateGlossaryDetails(view, val);
-            }
-          }
-        },
+      if (updatedData === null) {
+        return;
       }
-    );
+      const glossary = {
+        glossaryObject: updatedData,
+      };
+      this.updateGlossaryDetails(view, glossary);
+    } catch {
+      return;
+    }
   };
 
   updateGlossaryDetails(view: EditorView, glossary): void {
@@ -153,29 +174,29 @@ export class GlossaryView {
     newattrs['id'] = glossary.glossaryObject.id;
     newattrs['description'] = glossary.glossaryObject.description;
     newattrs['term'] = glossary.glossaryObject.term;
+    newattrs['definition'] = glossary.glossaryObject.definition;
     tr = tr.setNodeMarkup(this.node.attrs.from, undefined, newattrs);
     return tr;
   }
 
   deleteGlossaryNode = (view: EditorView): void => {
-    const {state} = view;
+    const { state, dispatch } = view;
     const glossaryNode = state.tr.doc.nodeAt(this.node.attrs.from);
     const nodeType = glossaryNode?.type?.name;
-    if (glossaryNode && 'glossary' === nodeType) {
-      const node = state.schema.text(this.node.attrs.term);
-      const tr = state.tr.replaceRangeWith(
-        this.node.attrs.from,
-        this.node.attrs.to,
-        node
+
+    if (glossaryNode && nodeType === 'glossary') {
+      const tr = state.tr.replaceWith(
+        this.getPos(),
+        this.getPos() + glossaryNode.nodeSize,
+        state.schema.text(this.node.attrs.term)
       );
+      dispatch(tr);
       const glossarySpan = document.getElementById(
         this.node.attrs.term + this.node.attrs.id + this.node.attrs.from
       );
       if (glossarySpan) {
-        glossarySpan.style.color = 'black';
-        glossarySpan.style.textDecoration = 'none';
+        glossarySpan.remove();
       }
-      view.dispatch(tr);
     }
   };
 
@@ -227,7 +248,7 @@ export class GlossaryView {
     const tooltip = this.dom.appendChild(document.createElement('div'));
     tooltip.className = 'molcit-glossary-tooltip';
     const ttContent = tooltip.appendChild(document.createElement('div'));
-    ttContent.innerHTML = this.node.attrs.description;
+    ttContent.innerHTML = this.node.attrs.definition;
     ttContent.className = 'ProseMirror molcit-glossary-tooltip-content';
     this.setContentRight(e, parent, tooltip, ttContent);
     if (window.screen.availHeight - e.clientY < 170 && ttContent.style.right) {
