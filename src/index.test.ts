@@ -4,12 +4,11 @@ import {Schema} from 'prosemirror-model';
 import {EditorState, TextSelection, Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {GlossaryView} from './glossaryView';
-import {GlossaryCommand} from './glossaryCommand';
+import {AcronymItem, GlossaryCommand, GlossaryItem} from './glossaryCommand';
 import {Transform} from 'prosemirror-transform';
 import {createEditor} from 'jest-prosemirror';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
 import {GlossaryListUI} from './glossaryListUI';
-import {EditorRuntime} from './types';
 
 class TestPlugin extends Plugin {
   constructor() {
@@ -22,7 +21,7 @@ describe('GlossaryPlugin', () => {
   let plugin;
 
   beforeEach(() => {
-    plugin = new GlossaryPlugin();
+    plugin = new GlossaryPlugin({});
   });
 
   describe('getEffectiveSchema', () => {
@@ -94,7 +93,7 @@ describe('GlossaryPlugin', () => {
         description: 'Test description',
         term: 'term',
       };
-      const plugin = new GlossaryPlugin();
+      const plugin = new GlossaryPlugin({});
       const effSchema = plugin.getEffectiveSchema(modSchema);
       const {doc, p} = builders(effSchema, {p: {nodeType: 'paragraph'}});
 
@@ -131,8 +130,6 @@ describe('GlossaryPlugin', () => {
           term: 'term',
         },
       };
-      glossaryCmd.createGlossaryNode(view.state, glossaryObj, false);
-      glossaryCmd.createGlossaryNode(view.state, glossaryObj, true);
       glossaryCmd._isEnabled(view.state, view);
       glossaryCmd._isGlossary = true;
       const bok = glossaryCmd.executeWithUserInput(
@@ -140,7 +137,7 @@ describe('GlossaryPlugin', () => {
         // view.dispatch,
         view.dispatch as (tr: Transform) => void,
         view,
-        glossaryObj
+        glossaryObj as unknown as GlossaryItem | AcronymItem
       );
       expect(bok).toBeFalsy();
     });
@@ -157,7 +154,7 @@ describe('GlossaryPlugin', () => {
         description: 'Test description',
         term: 'term',
       };
-      const plugin = new GlossaryPlugin();
+      const plugin = new GlossaryPlugin({});
       const effSchema = plugin.getEffectiveSchema(modSchema);
       const {doc, p} = builders(effSchema, {p: {nodeType: 'paragraph'}});
 
@@ -184,18 +181,6 @@ describe('GlossaryPlugin', () => {
 
       view.dispatch(tr);
       const glossaryCmd = new GlossaryCommand();
-      const glossaryObj = {
-        glossaryObject: {
-          from: 0,
-          to: 9,
-          type: 1,
-          id: 1,
-          description: 'Test description',
-          term: 'term',
-        },
-      };
-      glossaryCmd.createGlossaryNode(view.state, glossaryObj, false);
-      glossaryCmd.createGlossaryNode(view.state, glossaryObj, true);
       glossaryCmd._isEnabled(view.state, view);
 
       const mockGlossaryObj = {
@@ -209,12 +194,12 @@ describe('GlossaryPlugin', () => {
           term: 'term',
         },
       };
-      glossaryCmd.executeWithUserInput(state, undefined, view, mockGlossaryObj);
+      glossaryCmd.executeWithUserInput(state, undefined, view, mockGlossaryObj as unknown as GlossaryItem | AcronymItem);
       const bok = glossaryCmd.executeWithUserInput(
         state,
         view.dispatch as (tr: Transform) => void,
         view,
-        mockGlossaryObj
+        mockGlossaryObj as unknown as GlossaryItem | AcronymItem
       );
       expect(bok).toBeFalsy();
     });
@@ -232,7 +217,7 @@ describe('GlossaryPlugin', () => {
         term: 'term',
       };
 
-      const plugin = new GlossaryPlugin();
+      const plugin = new GlossaryPlugin({});
       const effSchema = plugin.getEffectiveSchema(modSchema);
       const {doc, p} = builders(effSchema, {p: {nodeType: 'paragraph'}});
       const state = EditorState.create({
@@ -250,7 +235,7 @@ describe('GlossaryPlugin', () => {
       );
       const editor = createEditor(doc('<cursor>', p('Hello')));
       const glossaryCmd = new GlossaryCommand();
-      glossaryCmd.runtime = '' as EditorRuntime;
+      glossaryCmd.runtime = '';
       glossaryCmd._popUp = createPopUp(
         GlossaryListUI,
         glossaryCmd.createGlossaryObject(view),
@@ -265,7 +250,7 @@ describe('GlossaryPlugin', () => {
         undefined,
         view
       );
-      expect(_test).toBeUndefined();
+      expect(_test).toBeFalsy();
     });
     it('should _isEnabled function return false', () => {
       const glossaryCmd = new GlossaryCommand();

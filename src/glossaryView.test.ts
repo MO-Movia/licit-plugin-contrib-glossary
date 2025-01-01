@@ -9,7 +9,6 @@ import {GlossaryView} from './glossaryView';
 import {GlossaryCommand} from './glossaryCommand';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
 import {GlossaryListUI} from './glossaryListUI';
-import {EditorRuntime} from './types';
 
 class TestPlugin extends Plugin {
   constructor() {
@@ -57,16 +56,15 @@ describe('Glossary Plugin Extended', () => {
     nodes: schema.spec.nodes,
     marks: schema.spec.marks,
   });
-  const plugin = new GlossaryPlugin();
+  const plugin = new GlossaryPlugin({});
   const effSchema = plugin.getEffectiveSchema(mySchema);
 
   const newGlossaryNode = effSchema.node(effSchema.nodes.glossary, glossary);
   plugin.initButtonCommands();
   const {doc, p} = builders(mySchema, {p: {nodeType: 'paragraph'}});
 
-
   it('should return position when posAtCoords returns a valid position', () => {
-    const mockPos = { pos: 42 , inside: 32};
+    const mockPos = {pos: 42, inside: 32};
     const before = 'hello';
     const after = ' world';
     const state = EditorState.create({
@@ -91,10 +89,12 @@ describe('Glossary Plugin Extended', () => {
 
     const result = gView.getNodePosEx(100, 200);
 
-    expect(gView.outerView.posAtCoords).toHaveBeenCalledWith({ left: 100, top: 200 });
+    expect(gView.outerView.posAtCoords).toHaveBeenCalledWith({
+      left: 100,
+      top: 200,
+    });
     expect(result).toBe(42);
   });
-
 
   it('should return null when posAtCoords returns null', () => {
     const before = 'hello';
@@ -119,7 +119,10 @@ describe('Glossary Plugin Extended', () => {
     );
     jest.spyOn(gView.outerView, 'posAtCoords').mockReturnValue(null);
     const result = gView.getNodePosEx(100, 200);
-    expect(gView.outerView.posAtCoords).toHaveBeenCalledWith({ left: 100, top: 200 });
+    expect(gView.outerView.posAtCoords).toHaveBeenCalledWith({
+      left: 100,
+      top: 200,
+    });
     expect(result).toBeNull();
   });
 
@@ -251,7 +254,7 @@ describe('Glossary Plugin Extended', () => {
     });
     targetElement.dispatchEvent(event);
     const glossaryCmd = new GlossaryCommand();
-    glossaryCmd.runtime = '' as EditorRuntime;
+    glossaryCmd.runtime = '';
     gView._popUp_subMenu = createPopUp(
       GlossaryListUI,
       glossaryCmd.createGlossaryObject(view),
@@ -263,7 +266,7 @@ describe('Glossary Plugin Extended', () => {
     );
     cView._popUp;
     cView.selectNode(mockEvent);
-    gView.runtime = {} as EditorRuntime;
+    gView.runtime = {};
     gView.onEditGlossary(view);
     cView.selectNode(event as MouseEvent);
   });
@@ -337,7 +340,7 @@ describe('Glossary Plugin Extended', () => {
       description: 'Test description',
       term: 'term',
     };
-    const plugin = new GlossaryPlugin();
+    const plugin = new GlossaryPlugin({});
     const effSchema = plugin.getEffectiveSchema(modSchema);
     const {doc, p} = builders(effSchema, {p: {nodeType: 'paragraph'}});
 
@@ -404,7 +407,7 @@ describe('Glossary Plugin Extended', () => {
       undefined as any
     );
     const glossaryCmd = new GlossaryCommand();
-    glossaryCmd.runtime = '' as EditorRuntime;
+    glossaryCmd.runtime = '';
 
     gView._popUp_subMenu = createPopUp(
       GlossaryListUI,
@@ -447,7 +450,7 @@ describe('Glossary Plugin Extended', () => {
     expect(nodeRes).not.toBe(null);
   });
 
-  it('update should return true',()=> {
+  it('update should return true', () => {
     const before = 'hello';
     const after = ' world';
 
@@ -469,7 +472,7 @@ describe('Glossary Plugin Extended', () => {
       view,
       undefined as any
     );
-  
+
     gView.node.sameMarkup(gView.node);
     expect(gView.update(gView.node)).toBe(true);
   });
@@ -507,5 +510,46 @@ describe('Glossary Plugin Extended', () => {
   it('ignoreMutation should return true', () => {
     gView.onGlossarySubMenuMouseOut();
     expect(gView.ignoreMutation()).toBe(true);
+  });
+
+  // it('should handle deleteGlossaryNode ',()=>{
+  //   gView.getPos = ()=>{}
+  //   const test = gView.deleteGlossaryNode ({dispatch:()=>{},state:{schema:{text:()=>{}},tr:{replaceWith:()=>{},doc:{nodeAt:()=>{return {type:{name:'glossary'}}}}}}} as unknown as EditorView)
+  //   expect(test).toBeUndefined()
+  // })
+  it('shoulld handle selectNode', () => {
+    gView.dom = null;
+    gView.getPos = () => {};
+    const test = gView.selectNode({currentTarget: null});
+    expect(test).toBeUndefined();
+  });
+  it('shoulld handle deleteGlossaryNode', () => {
+    jest
+      .spyOn(document, 'getElementById')
+      .mockReturnValue(document.createElement('div'));
+    gView.node.attrs.from = 1;
+    gView.node.attrs.term = {};
+    gView.node.attrs.id = {};
+    gView.getPos = () => {};
+    const test = gView.deleteGlossaryNode({
+      dispatch: () => {},
+      state: {
+        schema: {text: () => {}},
+        tr: {
+          replaceWith: () => {},
+          doc: {
+            nodeAt: () => {
+              return {type: {name: 'glossary'}};
+            },
+          },
+        },
+      },
+    });
+    expect(test).toBeUndefined();
+  });
+  it('shoulld handle close', () => {
+    gView.outerView.dom = {getElementsByClassName: () => {return [{remove:()=>{}}]}};
+    const test = gView.close();
+    expect(test).toBeUndefined();
   });
 });

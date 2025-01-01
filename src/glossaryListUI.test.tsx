@@ -1,5 +1,5 @@
 import {GlossaryListUI} from './glossaryListUI';
-import {EditorRuntime, Glossary} from './types';
+import {Glossary} from './types';
 jest.mock('./types', () => ({
   getGlossary: jest.fn(),
 }));
@@ -31,7 +31,7 @@ describe('GlossaryListUI component init', () => {
           },
         ]);
       },
-    } as EditorRuntime,
+    }
   };
   it('should render the GlossaryListUI component with Term', () => {
     const gPropo = {
@@ -59,7 +59,7 @@ describe('GlossaryListUI component init', () => {
             {id: '3', term: 'CAS', description: 'Close Air Support'},
           ]);
         },
-      } as EditorRuntime,
+      }
     };
     const wrapper = new GlossaryListUI({...gPropo});
     expect(wrapper).toBeDefined();
@@ -74,7 +74,7 @@ describe('GlossaryListUI component init', () => {
       close: () => {
         return;
       },
-      runtime: {} as EditorRuntime,
+      runtime: {}
     };
     const wrapper = new GlossaryListUI({...gPropo});
     expect(wrapper).toBeDefined();
@@ -144,5 +144,10 @@ describe('GlossaryListUI component init', () => {
     const wrapper = new GlossaryListUI({...gPropo});
     wrapper.onRowClick('1');
     expect(wrapper.state.selectedRowRefID).toEqual('3');
+  });
+  it('should handle getGlossary', () => {
+    const wrapper = new GlossaryListUI({...gPropo});
+    const test = wrapper.getGlossary();
+    expect(test).toBeUndefined();
   });
 });

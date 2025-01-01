@@ -5,7 +5,6 @@ import {Plugin, PluginKey, EditorState, TextSelection} from 'prosemirror-state';
 import {Schema} from 'prosemirror-model';
 import {EditorView} from 'prosemirror-view';
 import {createPopUp} from '@modusoperandi/licit-ui-commands';
-import {EditorRuntime} from './types';
 import {GlossaryListUI} from './glossaryListUI';
 import {Transform} from 'prosemirror-transform';
 
@@ -20,7 +19,7 @@ describe('GlossaryPlugin', () => {
   let plugin: GlossaryPlugin;
 
   beforeEach(() => {
-    plugin = new GlossaryPlugin();
+    plugin = new GlossaryPlugin({});
   });
   it('should Wait For User Input', () => {
     const modSchema = new Schema({
@@ -36,7 +35,7 @@ describe('GlossaryPlugin', () => {
       term: 'term',
     };
 
-    const plugin = new GlossaryPlugin();
+    const plugin = new GlossaryPlugin({});
     const effSchema = plugin.getEffectiveSchema(modSchema);
     const {doc, p} = builders(effSchema, {p: {nodeType: 'paragraph'}});
     const state = EditorState.create({
@@ -59,7 +58,7 @@ describe('GlossaryPlugin', () => {
     );
     view.dispatch(tr);
     const glossaryCmd = new GlossaryCommand();
-    glossaryCmd.runtime = '' as EditorRuntime;
+    glossaryCmd.runtime = '';
     glossaryCmd._popUp = createPopUp(
       GlossaryListUI,
       glossaryCmd.createGlossaryObject(view),
