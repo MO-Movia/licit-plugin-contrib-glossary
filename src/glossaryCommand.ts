@@ -84,11 +84,8 @@ export class GlossaryCommand extends UICommand {
     view?: EditorView,
     _event?: React.SyntheticEvent
   ): Promise<boolean> => {
-    if (state.selection.empty) {
-      return Promise.resolve(false);
-    }
     const runtime = view?.['runtime'];
-    return runtime.glossaryService
+    return runtime?.glossaryService
       .openManagementDialog({someData: 'value'})
       .then((result) => {
         if (result && !result.doNothing) {
