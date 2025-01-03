@@ -59,7 +59,7 @@ export class GlossaryPlugin extends Plugin {
 
   initButtonCommands(): unknown {
     return {
-      '[menu_book] Glossary': new GlossaryCommand(true, this._runtime)
+      '[menu_book] Insert Glossary/Acronym': new GlossaryCommand(true, this._runtime)
     };
   }
 }
