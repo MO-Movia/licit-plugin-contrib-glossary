@@ -181,7 +181,8 @@ export class GlossaryView {
 
   deleteGlossaryNode = (view: EditorView): void => {
     const { state, dispatch } = view;
-    const glossaryNode = state.tr.doc.nodeAt(this.node.attrs.from);
+    // Added fix for the issue that multiple glossary/acronym won't get deleted from the Doc
+    const glossaryNode = this.node;
     const nodeType = glossaryNode?.type?.name;
 
     if (glossaryNode && nodeType === 'glossary') {
