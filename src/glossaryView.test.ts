@@ -130,7 +130,7 @@ describe('Glossary Plugin Extended', () => {
     const mockEvent = new MouseEvent('click');
     const before = 'hello';
     const after = ' world';
-
+  
     const state = EditorState.create({
       doc: doc(p(before, newGlossaryNode, after)),
       schema: effSchema,
@@ -139,19 +139,23 @@ describe('Glossary Plugin Extended', () => {
     const dom = document.createElement('div');
     document.body.appendChild(dom);
     const view = new EditorView(
-      {mount: dom},
+      { mount: dom },
       {
         state: state,
       }
     );
+  
     const gView = new GlossaryView(
       view.state.doc.nodeAt(6) as Node,
       view,
-      undefined as any
+      undefined as any 
     );
+  
+    (gView as any).getPos = jest.fn().mockReturnValue(6);
+    (gView.node.attrs as any).term = 'validTerm';
+  
     const mockOpen = jest.spyOn(gView, 'open');
     gView.showSourceText(mockEvent);
-    (gView.node.attrs as Record<string, boolean>).term = false;
     gView.deleteGlossaryNode(view);
     expect(mockOpen).toHaveBeenCalledWith(mockEvent);
   });
