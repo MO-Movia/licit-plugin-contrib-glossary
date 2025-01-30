@@ -23,15 +23,19 @@ export interface AcronymItem {
   description: string;
 }
 
+interface Runtime {
+  glossaryService: {
+    openManagementDialog: (params: { someData: string }) => Promise<{ doNothing?: boolean }>;
+  };
+}
+
 export class GlossaryCommand extends UICommand {
   _popUp: PopUpHandle | null = null;
   _alertPopup: PopUpHandle | null = null;
   _isGlossary = true;
-  // eslint-disable-next-line
-  runtime: any;
+  runtime: Runtime;
   doNothing: false;
-  // eslint-disable-next-line
-  constructor(isGlossary?: boolean, runtime?: any) {
+  constructor(isGlossary?: boolean, runtime?: Runtime) {
     super();
     this._isGlossary = isGlossary ?? true;
     this.runtime = runtime;

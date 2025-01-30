@@ -258,7 +258,6 @@ describe('Glossary Plugin Extended', () => {
     });
     targetElement.dispatchEvent(event);
     const glossaryCmd = new GlossaryCommand();
-    glossaryCmd.runtime = '';
     gView._popUp_subMenu = createPopUp(
       GlossaryListUI,
       glossaryCmd.createGlossaryObject(view),
@@ -411,7 +410,7 @@ describe('Glossary Plugin Extended', () => {
       undefined as any
     );
     const glossaryCmd = new GlossaryCommand();
-    glossaryCmd.runtime = '';
+    // glossaryCmd.runtime = '';
 
     gView._popUp_subMenu = createPopUp(
       GlossaryListUI,
@@ -516,11 +515,6 @@ describe('Glossary Plugin Extended', () => {
     expect(gView.ignoreMutation()).toBe(true);
   });
 
-  // it('should handle deleteGlossaryNode ',()=>{
-  //   gView.getPos = ()=>{}
-  //   const test = gView.deleteGlossaryNode ({dispatch:()=>{},state:{schema:{text:()=>{}},tr:{replaceWith:()=>{},doc:{nodeAt:()=>{return {type:{name:'glossary'}}}}}}} as unknown as EditorView)
-  //   expect(test).toBeUndefined()
-  // })
   it('shoulld handle selectNode', () => {
     gView.dom = null;
     gView.getPos = () => {};

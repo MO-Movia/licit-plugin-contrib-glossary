@@ -13,6 +13,14 @@ import { GlossarySubMenu } from './glossarySubMenu';
 type CBFn = () => void;
 const GLOSSARY = 'glossary';
 
+interface GlossaryService {
+  editGlossary: (data: GlossaryItem | AcronymItem) => Promise<GlossaryItem | AcronymItem | null>;
+}
+
+interface Runtime {
+  glossaryService: GlossaryService;
+}
+
 export type Style = {
   styles?: {
     underline?;
@@ -28,15 +36,13 @@ export class GlossaryView {
   _popUp_subMenu: PopUpHandle | null = null;
   dom: globalThis.Node = null;
   offsetLeft: Element;
-  // eslint-disable-next-line
-  runtime: any;
+  runtime: Runtime;
   item: GlossaryItem | AcronymItem;
   constructor(
     node: Node,
     view: EditorView,
     getPos: CBFn,
-    // eslint-disable-next-line
-    runtime?: any
+    runtime?: Runtime
   ) {
     // We'll need these later
     this.node = node;
@@ -124,8 +130,7 @@ export class GlossaryView {
   onEditGlossary = async (
     view: EditorView,
   ): Promise<void> => {
-    // eslint-disable-next-line
-    let data: any;
+    let data: AcronymItem | GlossaryItem;
     if ('description' in this.node.attrs && this.node.attrs.description !== null) {
       // Handle AcronymItem
       data = {

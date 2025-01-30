@@ -235,7 +235,6 @@ describe('GlossaryPlugin', () => {
       );
       const editor = createEditor(doc('<cursor>', p('Hello')));
       const glossaryCmd = new GlossaryCommand();
-      glossaryCmd.runtime = '';
       glossaryCmd._popUp = createPopUp(
         GlossaryListUI,
         glossaryCmd.createGlossaryObject(view),

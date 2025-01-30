@@ -3,6 +3,11 @@
 import * as React from 'react';
 import {Glossary} from './types';
 
+interface EditorRuntime {
+  getGlossary?: (term: string) => Promise<Glossary[]>;
+  getAcronyms?: (term: string) => Promise<Glossary[]>;
+}
+
 type GlossaryListProps = {
   glossaries: Glossary[];
   glossaryObject: Glossary;
@@ -10,8 +15,7 @@ type GlossaryListProps = {
   isGlossary: boolean;
   term: string;
   close: (val?) => void;
-  // eslint-disable-next-line
-  runtime: any;
+  runtime: EditorRuntime;
 };
 let glossaryObject: Glossary;
 let selectedRowRefID = '';
@@ -35,7 +39,7 @@ export class GlossaryListUI extends React.PureComponent<
 
   getGlossary(): void {
     const runtime = this.props.runtime;
-    if (this.state.isGlossary && typeof runtime.getGlossary === 'function') {
+    if (this.state.isGlossary && typeof runtime?.getGlossary === 'function') {
       runtime.getGlossary(this.state.term).then((result) => {
         this.updateState(result);
       });

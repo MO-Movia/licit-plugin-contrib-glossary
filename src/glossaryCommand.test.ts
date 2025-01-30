@@ -58,7 +58,6 @@ describe('GlossaryPlugin', () => {
     );
     view.dispatch(tr);
     const glossaryCmd = new GlossaryCommand();
-    glossaryCmd.runtime = '';
     glossaryCmd._popUp = createPopUp(
       GlossaryListUI,
       glossaryCmd.createGlossaryObject(view),
