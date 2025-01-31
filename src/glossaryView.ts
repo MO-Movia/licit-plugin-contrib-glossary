@@ -131,8 +131,8 @@ export class GlossaryView {
     view: EditorView,
   ): Promise<void> => {
     let data: AcronymItem | GlossaryItem;
-    if ('description' in this.node.attrs && this.node.attrs.description !== null) {
-      // Handle AcronymItem
+    if (typeof this.node.attrs.description === 'string') {
+      // Handle AcronymItem (since description is a valid string)
       data = {
         id: this.node.attrs.id,
         term: this.node.attrs.term,
@@ -151,11 +151,11 @@ export class GlossaryView {
       const runtime = view?.['runtime'];
       const updatedData = await runtime.glossaryService.editGlossary(data);
 
-      if (updatedData === null) {
+      if (updatedData == null) {
         return;
       }
       const glossary = {
-        glossaryObject: updatedData,
+        glossaryObject: updatedData
       };
       this.updateGlossaryDetails(view, glossary);
     } catch {
@@ -190,7 +190,7 @@ export class GlossaryView {
     const glossaryNode = this.node;
     const nodeType = glossaryNode?.type?.name;
 
-    if (glossaryNode && nodeType === 'glossary') {
+    if (nodeType === 'glossary') {
       const tr = state.tr.replaceWith(
         this.getPos(),
         this.getPos() + glossaryNode.nodeSize,
