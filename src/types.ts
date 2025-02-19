@@ -1,28 +1,35 @@
-export type NodeSpec = {
-  attrs?: { [key: string]: unknown };
-  content?: string;
-  draggable?: boolean;
-  group?: string;
-  inline?: boolean;
-  name?: string;
-  parseDOM?: Array<unknown>;
-  toDOM?: (node) => Array<unknown>;
-  selectable: boolean;
-};
-export type MarkSpec = {
-  attrs?: { [key: string]: unknown };
-  name?: string;
-  parseDOM: Array<unknown>;
-  toDOM: (node) => Array<unknown>;
-};
+import {PluginKey} from 'prosemirror-state';
+import {cacheInput as CacheInput} from './glossaryView';
 
-export type Glossary = {
+export const GLOSSARY_PLUGIN_KEY = new PluginKey('GlossaryPlugin');
+export const GLOSSARY = 'glossary';
+export const ACRONYM = 'acronym';
+
+export interface GlossaryItem {
   id: string;
   term: string;
-  description: string;
-};
+  definition: string;
+  description?: never; // for safer typing against Acronyms
+}
 
-export type EditorRuntime = {
-  getAcronyms?: (abbreviation: string) => Promise<Glossary[]>,
-  getGlossary?: (term: string) => Promise<Glossary[]>,
-};
+export interface AcronymItem {
+  id: string;
+  term: string;
+  definition: string;
+  description: string;
+}
+
+export type IndexItem = GlossaryItem | AcronymItem;
+
+export interface GlossaryService {
+  openManagementDialog(
+    initialSearch: string
+  ): Promise<IndexItem | null | undefined>;
+
+  fetchTerm?(id: string): Promise<IndexItem | null | undefined>;
+}
+
+export interface GlossaryRuntime {
+  glossaryService: GlossaryService;
+  cache?: CacheInput;
+}

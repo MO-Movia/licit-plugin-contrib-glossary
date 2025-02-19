@@ -1,12 +1,15 @@
 import {GlossaryCommand} from './glossaryCommand';
 import {GlossaryPlugin} from './index';
 import {schema, builders} from 'prosemirror-test-builder';
-import {Plugin, PluginKey, EditorState, TextSelection} from 'prosemirror-state';
+import {
+  Plugin,
+  PluginKey,
+  EditorState,
+  TextSelection,
+  NodeSelection,
+} from 'prosemirror-state';
 import {Schema} from 'prosemirror-model';
 import {EditorView} from 'prosemirror-view';
-import {createPopUp} from '@modusoperandi/licit-ui-commands';
-import {EditorRuntime} from './types';
-import {GlossaryListUI} from './glossaryListUI';
 import {Transform} from 'prosemirror-transform';
 
 class TestPlugin extends Plugin {
@@ -19,8 +22,11 @@ class TestPlugin extends Plugin {
 describe('GlossaryPlugin', () => {
   let plugin: GlossaryPlugin;
 
+  const runtime = {
+    glossaryService: {openManagementDialog: () => Promise.resolve(null)},
+  };
   beforeEach(() => {
-    plugin = new GlossaryPlugin();
+    plugin = new GlossaryPlugin(runtime);
   });
   it('should Wait For User Input', () => {
     const modSchema = new Schema({
@@ -36,7 +42,6 @@ describe('GlossaryPlugin', () => {
       term: 'term',
     };
 
-    const plugin = new GlossaryPlugin();
     const effSchema = plugin.getEffectiveSchema(modSchema);
     const {doc, p} = builders(effSchema, {p: {nodeType: 'paragraph'}});
     const state = EditorState.create({
@@ -58,18 +63,8 @@ describe('GlossaryPlugin', () => {
       view.state.reconfigure({plugins: [plugin, new TestPlugin()]})
     );
     view.dispatch(tr);
-    const glossaryCmd = new GlossaryCommand();
-    glossaryCmd.runtime = '' as EditorRuntime;
-    glossaryCmd._popUp = createPopUp(
-      GlossaryListUI,
-      glossaryCmd.createGlossaryObject(view),
-      {
-        modal: true,
-        IsChildDialog: false,
-        autoDismiss: false,
-      }
-    );
-    glossaryCmd._isGlossary = false;
+    const glossaryCmd = new GlossaryCommand(runtime);
+    glossaryCmd['isGlossary'] = false;
     expect(glossaryCmd.deleteGlossaryNode(view.state, 'term')).toBeDefined();
   });
   it('getSelectedText() returns the selected text in the editor view', () => {
@@ -102,7 +97,7 @@ describe('GlossaryPlugin', () => {
         state: state,
       }
     );
-    const gm = new GlossaryCommand();
+    const gm = new GlossaryCommand(runtime);
     const selection = TextSelection.create(view.state.doc, 1, 2);
     const tr = view.state.tr.setSelection(selection);
     view.updateState(
@@ -110,26 +105,55 @@ describe('GlossaryPlugin', () => {
     );
     view.dispatch(tr);
     const selectedText = gm.getSelectedText(view);
-    gm.isEnabled(state, view);
-    gm.createGlossaryObject(view);
     expect(selectedText).toBe('hello');
   });
 
-
   it('should render label', () => {
-    const gm = new GlossaryCommand();
+    const gm = new GlossaryCommand(runtime);
     expect(gm.renderLabel()).toBeNull();
   });
 
   it('should be active', () => {
-    const gm = new GlossaryCommand();
+    const gm = new GlossaryCommand(runtime);
     expect(gm.isActive()).toBeTruthy();
   });
 
   it('should execute custom', () => {
-    const gm = new GlossaryCommand();
+    const gm = new GlossaryCommand(runtime);
     const mockState = {} as unknown as EditorState;
     const mockTr = {} as unknown as Transform;
     expect(gm.executeCustom(mockState, mockTr)).toBe(mockTr);
+  });
+
+  it('should execute cancel without errors', () => {
+    const gm = new GlossaryCommand(runtime);
+    expect(() => gm.cancel()).not.toThrow();
+  });
+
+  it('should return false if the selected node type is "image"', () => {
+    const modSchema = new Schema({
+      nodes: schema.spec.nodes,
+      marks: schema.spec.marks,
+    });
+
+    const {doc} = builders(modSchema, {
+      image: {nodeType: 'image'},
+    });
+    const imageNode = modSchema.nodes.image.create({
+      src: 'test.jpg',
+      alt: 'Test Image',
+    });
+
+    const state = EditorState.create({
+      doc: doc(imageNode),
+      selection: NodeSelection.create(doc(imageNode), 0),
+    });
+
+    const view = {
+      runtime: {},
+    } as unknown as EditorView;
+
+    const gm = new GlossaryCommand(null!);
+    expect(gm.isEnabled(state, view)).toBe(false);
   });
 });
