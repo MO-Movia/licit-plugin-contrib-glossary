@@ -1,57 +1,51 @@
-import { Node, Schema } from 'prosemirror-model';
-import { Plugin, PluginKey } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
+import {Node, Schema} from 'prosemirror-model';
+import {Plugin} from 'prosemirror-state';
+import {EditorView} from 'prosemirror-view';
 import {
   makeKeyMapWithCommon,
   createKeyMapPlugin,
 } from '@modusoperandi/licit-doc-attrs-step';
 import {GlossaryNodeSpec} from './glossaryNodeSpec';
-import {GlossaryView} from './glossaryView';
-import { GlossaryCommand } from './glossaryCommand';
+import {GlossaryView, updateCache} from './glossaryView';
+import {GLOSSARY_PLUGIN_KEY, GlossaryRuntime} from './types';
+import {GlossaryCommand} from './glossaryCommand';
+import {GLOSSARY} from './types';
 
-export const GLOSSARY = 'glossary';
-export const ACRONYM = 'acronym';
+export const KEY_GLOSSARY = makeKeyMapWithCommon(GLOSSARY, 'Mod-Alt' + '-g');
 
-export const KEY_GLOSSARY = makeKeyMapWithCommon(
-  GLOSSARY,
-  'Mod-Alt' + '-g'
-);
-export const KEY_ACRONYM = makeKeyMapWithCommon(
-  ACRONYM,
-  'Mod-Alt' + '-a'
-);
-
-export class GlossaryPlugin extends Plugin {
-  _runtime = null;
-  constructor(runtime) {
+export class GlossaryPlugin extends Plugin<{runtime: GlossaryRuntime}> {
+  constructor(private runtime?: GlossaryRuntime) {
     super({
-      key: new PluginKey('GlossaryPlugin'),
+      key: GLOSSARY_PLUGIN_KEY,
       props: {
-        nodeViews: {},
+        nodeViews: {
+          [GLOSSARY]: bindGlossaryView,
+        },
       },
       state: {
         init(_config, _state) {
-          (this as GlossaryPlugin)._runtime = runtime;
-          this.spec.props.nodeViews[GLOSSARY] = bindGlossaryView.bind(this);
+          return {runtime};
         },
         apply(_tr, _prev, _, _newState) {
-          //do nothing
+          return _prev;
         },
       },
     });
+    updateCache(runtime?.cache);
   }
 
   getEffectiveSchema(schema: Schema): Schema {
-    const nodes = schema.spec.nodes.addToEnd('glossary', GlossaryNodeSpec);
+    const nodes = schema.spec.nodes.addToEnd(GLOSSARY, GlossaryNodeSpec);
     const marks = schema.spec.marks;
-    schema = new Schema({ nodes, marks });
+    schema = new Schema({nodes, marks});
     return schema;
   }
 
   initKeyCommands(): unknown {
     return createKeyMapPlugin(
       {
-        [KEY_GLOSSARY.common]: new GlossaryCommand(true, this._runtime).waitForUserInput,
+        [KEY_GLOSSARY.common]: new GlossaryCommand(this.runtime)
+          .waitForUserInput,
       },
       'GlossaryKeyMap'
     );
@@ -59,21 +53,15 @@ export class GlossaryPlugin extends Plugin {
 
   initButtonCommands(): unknown {
     return {
-      '[menu_book] Insert Glossary/Acronym': new GlossaryCommand(true, this._runtime)
+      '[menu_book] Insert Glossary/Acronym': new GlossaryCommand(this.runtime),
     };
   }
 }
 
-export function bindGlossaryView(
+function bindGlossaryView(
   node: Node,
-  view: EditorView,
-  curPos: boolean | (() => number)
-): GlossaryViewExt {
-  return new GlossaryViewExt(node, view, curPos);
-}
-
-class GlossaryViewExt extends GlossaryView {
-  constructor(node: Node, view: EditorView, getCurPos) {
-    super(node, view, getCurPos);
-  }
+  view: EditorView
+  // curPos: () => number
+): GlossaryView {
+  return new GlossaryView(node, view);
 }
