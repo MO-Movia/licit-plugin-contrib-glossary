@@ -8,7 +8,7 @@
   "types": "index.d.ts",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/MO-Movia/licit-plugin-contrib-glossary.git"
   },
   "peerDependencies": {
     "@modusoperandi/licit-ui-commands": "^1.0.0"
