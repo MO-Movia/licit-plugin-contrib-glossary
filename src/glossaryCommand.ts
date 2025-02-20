@@ -53,29 +53,33 @@ export class GlossaryCommand extends UICommand {
     if (!item) {
       return false;
     }
-    const {selection} = state;
-    const {from, to} = selection;
+    try {
+      const {selection} = state;
+      const {from, to} = selection;
 
-    // Validate positions
-    if (
-      from >= 0 &&
-      to >= 0 &&
-      from < state.doc.content.size &&
-      to < state.doc.content.size
-    ) {
-      let transaction = this.createGlossaryAcronymNode(
-        state,
-        item,
-        !selection.empty
-      );
+      // Validate positions
+      if (
+        from >= 0 &&
+        to >= 0 &&
+        from < state.doc.content.size &&
+        to < state.doc.content.size
+      ) {
+        let transaction = this.createGlossaryAcronymNode(
+          state,
+          item,
+          !selection.empty
+        );
 
-      // Restore selection if needed
-      if (!selection.empty) {
-        const newSelection = TextSelection.create(transaction.doc, from, to);
-        transaction = transaction.setSelection(newSelection);
+        // Restore selection if needed
+        if (!selection.empty) {
+          const newSelection = TextSelection.create(transaction.doc, from, to);
+          transaction = transaction.setSelection(newSelection);
+        }
+        dispatch?.(transaction);
+        return true;
       }
-      dispatch?.(transaction);
-      return true;
+    } catch {
+      // can't do transaction. return false.
     }
 
     return false;
