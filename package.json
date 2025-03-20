@@ -42,7 +42,7 @@
     "stylelint-prettier": "^5.0.0",
     "ts-jest": "^29.0.7",
     "ts-node": "^10.4.0",
-    "typescript": "5.5.3"
+    "typescript": "5.8.2"
   },
   "overrides": {
     "libxmljs2": "^1.0.0"
