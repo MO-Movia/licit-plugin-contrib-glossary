@@ -1,5 +1,5 @@
 import {PluginKey} from 'prosemirror-state';
-import {cacheInput as CacheInput} from './glossaryView';
+import {EditorView} from 'prosemirror-view';
 
 export const GLOSSARY_PLUGIN_KEY = new PluginKey('GlossaryPlugin');
 export const GLOSSARY = 'glossary';
@@ -28,8 +28,23 @@ export interface GlossaryService {
 
   fetchTerm?(id: string): Promise<IndexItem | null | undefined>;
 }
+export type CacheInput = IndexItem[] | Promise<IndexItem[]>;
 
 export interface GlossaryRuntime {
   glossaryService: GlossaryService;
   cache?: CacheInput;
+}
+
+export interface GlossaryPluginState {
+  runtime?: GlossaryRuntime;
+}
+
+export function getGlossaryRuntime(
+  view: EditorView
+): GlossaryRuntime | undefined {
+  return (
+    view.state.plugins
+      .find((p) => p.spec.key === GLOSSARY_PLUGIN_KEY)
+      ?.getState(view.state) as GlossaryPluginState
+  )?.runtime;
 }

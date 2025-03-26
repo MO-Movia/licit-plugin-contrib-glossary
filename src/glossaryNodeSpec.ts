@@ -1,10 +1,12 @@
-import {DOMOutputSpec, Node, NodeSpec} from 'prosemirror-model';
+import type {Attrs, DOMOutputSpec, Node, NodeSpec} from 'prosemirror-model';
 import {GLOSSARY} from './types';
 
 export const GlossaryNodeSpec: NodeSpec = {
+  atom: true,
   group: 'inline',
   content: 'text*',
   inline: true,
+  isolating: true,
   selectable: true,
   // added new attributes to this spec.
   attrs: {
@@ -25,15 +27,15 @@ export const GlossaryNodeSpec: NodeSpec = {
   ],
 };
 
-function getAttrs(dom: HTMLElement): Record<string, unknown> {
-  const from = dom.getAttribute('from') || null;
-  const to = dom.getAttribute('to') || null;
-  const type = dom.getAttribute('type') || null;
+function getAttrs(dom: HTMLElement): Attrs {
+  const from = dom.getAttribute('from');
+  const to = dom.getAttribute('to');
+  const type = dom.getAttribute('type');
 
-  const description = dom.getAttribute('description') || null;
-  const definition = dom.getAttribute('definition') || null;
-  const term = dom.getAttribute('term') || null;
-  const id = dom.getAttribute('id') || null;
+  const description = dom.getAttribute('description');
+  const definition = dom.getAttribute('definition');
+  const term = dom.getAttribute('term');
+  const id = dom.getAttribute('id');
 
   return {
     from,
@@ -56,14 +58,6 @@ function toDOM(node: Node): DOMOutputSpec {
     definition,
     term,
     id,
-  };
-  attrs.from = from;
-  attrs.to = to;
-  attrs.type = type;
-  attrs.description = description;
-  attrs.definition = definition;
-  attrs.term = term;
-  attrs.id = id;
-
-  return [GLOSSARY, attrs];
+  } as Record<string, unknown>;
+  return [GLOSSARY, attrs, 0];
 }

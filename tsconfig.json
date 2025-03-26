@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "target": "ES2022",
     "module": "esnext",
@@ -28,8 +29,4 @@
   "include": [
     "src/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "**/*.test.ts"
-  ]
 }
