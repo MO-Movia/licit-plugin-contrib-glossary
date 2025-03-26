@@ -7,14 +7,16 @@ import {
 } from '@modusoperandi/licit-doc-attrs-step';
 import {GlossaryNodeSpec} from './glossaryNodeSpec';
 import {GlossaryView, updateCache} from './glossaryView';
-import {GLOSSARY_PLUGIN_KEY, GlossaryRuntime} from './types';
+import {GLOSSARY_PLUGIN_KEY, GlossaryRuntime, GLOSSARY} from './types';
 import {GlossaryCommand} from './glossaryCommand';
-import {GLOSSARY} from './types';
 
-export const KEY_GLOSSARY = makeKeyMapWithCommon(GLOSSARY, 'Mod-Alt' + '-g');
+export const KEY_GLOSSARY = makeKeyMapWithCommon(
+  GLOSSARY,
+  'Mod-Alt' + '-g'
+) as {common: string};
 
-export class GlossaryPlugin extends Plugin<{runtime: GlossaryRuntime}> {
-  constructor(private runtime?: GlossaryRuntime) {
+export class GlossaryPlugin extends Plugin<{runtime?: GlossaryRuntime}> {
+  constructor(private readonly runtime?: GlossaryRuntime) {
     super({
       key: GLOSSARY_PLUGIN_KEY,
       props: {

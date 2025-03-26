@@ -2,7 +2,7 @@ import {GlossaryPlugin} from './index';
 import {schema, builders} from 'prosemirror-test-builder';
 import {EditorState} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
-import {Node, Schema} from 'prosemirror-model';
+import {Schema} from 'prosemirror-model';
 import {GlossaryView} from './glossaryView';
 
 describe('Glossary Plugin Extended', () => {
@@ -44,7 +44,15 @@ describe('Glossary Plugin Extended', () => {
         state: state,
       }
     );
-    gView = new GlossaryView(view.state.doc.nodeAt(6) as Node, view);
+    gView = new GlossaryView(view.state.doc.nodeAt(6)!, view);
+  });
+
+  it('should require toDom defined', () => {
+    expect(gView.ignoreMutation()).toBeTruthy();
+  });
+
+  it('should ignore mutations', () => {
+    expect(() => new GlossaryView(null!, null!)).toThrow();
   });
 
   it('update should return true', () => {
@@ -64,7 +72,7 @@ describe('Glossary Plugin Extended', () => {
         state: state,
       }
     );
-    const gView = new GlossaryView(view.state.doc.nodeAt(6) as Node, view);
+    const gView = new GlossaryView(view.state.doc.nodeAt(6)!, view);
 
     gView['node'].sameMarkup(gView['node']);
     expect(gView.update(gView['node'])).toBe(true);
@@ -87,8 +95,8 @@ describe('Glossary Plugin Extended', () => {
         state: state,
       }
     );
-    gView = new GlossaryView(view.state.doc.nodeAt(6) as Node, view);
-    const node = view.state.doc.nodeAt(0) as Node;
+    gView = new GlossaryView(view.state.doc.nodeAt(6)!, view);
+    const node = view.state.doc.nodeAt(0)!;
     expect(gView.update(node)).toBe(false);
   });
 

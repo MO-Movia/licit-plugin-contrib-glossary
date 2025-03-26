@@ -1,4 +1,4 @@
-import {AcronymItem, cache, GlossaryItem, GlossaryPlugin} from './index';
+import {cache, GlossaryPlugin, IndexItem} from './index';
 import {schema, builders} from 'prosemirror-test-builder';
 import {Schema} from 'prosemirror-model';
 import {EditorState, TextSelection, Plugin, PluginKey} from 'prosemirror-state';
@@ -39,21 +39,23 @@ describe('GlossaryPlugin', () => {
   it('should init cache from array', () => {
     const id = 'cacheA';
     expect(cache[id]).toBeUndefined();
-    new GlossaryPlugin({
+    const p = new GlossaryPlugin({
       ...runtime,
       cache: [{id, term: id, definition: id}],
     });
+    expect(p).toBeTruthy();
     expect(cache[id]).toBeDefined();
   });
   it('should init cache from promise', async () => {
     const id = 'cacheP';
     expect(cache[id]).toBeUndefined();
     const promise = Promise.resolve([{id, term: id, definition: id}]);
-    new GlossaryPlugin({
+    const p = new GlossaryPlugin({
       ...runtime,
       cache: promise,
     });
     await promise;
+    expect(p).toBeTruthy();
     expect(cache[id]).toBeDefined();
   });
   describe('initKeyCommands', () => {
@@ -96,90 +98,26 @@ describe('GlossaryPlugin', () => {
 
       view.dispatch(tr);
       const glossaryCmd = new GlossaryCommand(runtime);
-      const glossaryObj = {
-        glossaryObject: {
-          from: 0,
-          to: 9,
-          type: 1,
-          id: 1,
-          description: 'Test description',
-          term: 'term',
-        },
-      };
-      glossaryCmd.isEnabled(view.state, view);
-      glossaryCmd['isGlossary'] = true;
-      const bok = glossaryCmd.executeWithUserInput(
-        state,
-        // view.dispatch,
-        view.dispatch as (tr: Transform) => void,
-        view,
-        glossaryObj as unknown as GlossaryItem | AcronymItem
-      );
-      expect(bok).toBeTruthy();
-    });
-    it('should executeWithUserInput', () => {
-      const modSchema = new Schema({
-        nodes: schema.spec.nodes,
-        marks: schema.spec.marks,
-      });
-      const glossary = {
-        from: 0,
-        to: 9,
-        type: 1,
-        id: 1,
+      expect(glossaryCmd.isEnabled(view.state, view)).toBeFalsy();
+
+      const mockGlossaryObj: IndexItem = {
+        id: 'test',
         description: 'Test description',
+        definition: 'Test definition',
         term: 'term',
       };
-      const effSchema = plugin.getEffectiveSchema(modSchema);
-      const {doc, p} = builders(effSchema, {p: {nodeType: 'paragraph'}});
-
-      const state = EditorState.create({
-        doc: doc(p(glossary)),
-        schema: effSchema,
-      });
-      const dom = document.createElement('div');
-      document.body.appendChild(dom);
-      // Set up our document body
-      document.body.innerHTML = '<div></div>';
-      const view = new EditorView(
-        {mount: dom},
-        {
-          state: state,
-        }
-      );
-
-      const selection = TextSelection.create(view.state.doc, 1, 2);
-      const tr = view.state.tr.setSelection(selection);
-      view.updateState(
-        view.state.reconfigure({plugins: [plugin, new TestPlugin()]})
-      );
-
-      view.dispatch(tr);
-      const glossaryCmd = new GlossaryCommand(runtime);
-      glossaryCmd.isEnabled(view.state, view);
-
-      const mockGlossaryObj = {
-        doNothing: true,
-        glossaryObject: {
-          from: 0,
-          to: 9,
-          type: 1,
-          id: 1,
-          description: 'Test description',
-          term: 'term',
-        },
-      };
-      glossaryCmd.executeWithUserInput(
+      const test = glossaryCmd.executeWithUserInput(
         state,
         undefined,
         view,
-        mockGlossaryObj as unknown as GlossaryItem | AcronymItem
+        mockGlossaryObj
       );
+      expect(test).toBeTruthy();
       const bok = glossaryCmd.executeWithUserInput(
         state,
         view.dispatch as (tr: Transform) => void,
         view,
-        mockGlossaryObj as unknown as GlossaryItem | AcronymItem
+        mockGlossaryObj
       );
       expect(bok).toBeTruthy();
     });
