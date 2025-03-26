@@ -1,54 +1,55 @@
 import {DOMSerializer, Node} from 'prosemirror-model';
 import {EditorView, NodeView} from 'prosemirror-view';
-import {
-  GLOSSARY,
-  GLOSSARY_PLUGIN_KEY,
-  GlossaryRuntime,
-  IndexItem,
-} from './types';
+import {CacheInput, getGlossaryRuntime, GLOSSARY, IndexItem} from './types';
 import tippy from 'tippy.js';
 
-export const cache: Record<string, Promise<IndexItem>> = {};
-export type cacheInput = IndexItem[] | Promise<IndexItem[]>;
-export function updateCache(values?: cacheInput) {
+export const cache: Record<
+  string,
+  Promise<IndexItem | undefined | null> | undefined
+> = {};
+export function updateCache(values?: CacheInput) {
   if (Array.isArray(values)) {
     for (const item of values) {
       cache[item.id] = Promise.resolve(item);
     }
   } else {
-    values?.then((v) => updateCache(v));
+    values?.then((v) => updateCache(v)).catch(console.warn);
   }
 }
 
 export class GlossaryView implements NodeView {
   dom: globalThis.Node;
+  contentDOM: HTMLElement;
   constructor(
     private node: Node,
     outerView: EditorView
   ) {
+    if (!node?.type?.spec?.toDOM) {
+      throw new Error('node "toDom" is not defined');
+    }
     // We'll need these later
     const spec = DOMSerializer.renderSpec(
       outerView.dom.ownerDocument,
-      this.node.type.spec.toDOM(this.node)
+      node.type.spec.toDOM(this.node)
     );
     this.dom = spec.dom;
-    (this.dom as Element).className = GLOSSARY;
-    this.updateContent(outerView);
+    this.contentDOM = spec.contentDOM!;
+    this.contentDOM.contentEditable = 'false';
+    this.contentDOM.className = GLOSSARY;
+    this.updateTooltip(outerView);
   }
 
-  private async updateContent(view: EditorView) {
-    const id = this.node.attrs.id;
-    (this.dom as Element).textContent = this.node.attrs.term;
-    cache[id] ??= (
-      view.state.plugins
-        .find((p) => p.spec.key === GLOSSARY_PLUGIN_KEY)
-        ?.getState(view.state)?.runtime as GlossaryRuntime
-    )?.glossaryService?.fetchTerm?.(id);
+  private updateTooltip(view: EditorView) {
+    const id = this.node.attrs.id as string;
+    cache[id] ??= getGlossaryRuntime(view)?.glossaryService?.fetchTerm?.(id);
 
-    (this.dom as Element).textContent =
-      (await cache[id])?.term ?? this.node.attrs.term;
-    tippy(this.dom as Element, {
-      content: (await cache[id])?.definition ?? this.node.attrs.definition,
+    this.setTooltip(this.node.attrs as IndexItem);
+    cache[id]?.then((term) => this.setTooltip(term)).catch(console.warn);
+  }
+
+  private setTooltip(term: IndexItem | undefined | null) {
+    tippy(this.contentDOM, {
+      content: term?.definition,
     });
   }
 

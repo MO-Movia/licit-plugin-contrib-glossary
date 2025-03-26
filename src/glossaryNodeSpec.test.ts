@@ -20,7 +20,7 @@ describe('GlossaryNodeSpec', () => {
     dom.setAttribute('term', 'term');
     dom.setAttribute('id', '1');
 
-    const { from, to, description, id, term, type } = node.attrs;
+    const {from, to, description, id, term, type} = node.attrs;
 
     const attsOutput: Record<string, string | null> = {
       from,
