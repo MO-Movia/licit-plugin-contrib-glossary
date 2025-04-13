@@ -40,7 +40,7 @@
     "prosemirror-test-builder": "^1.1.1",
     "prettier": "^3.2.0",
     "stylelint": "^16.1.0",
-    "stylelint-config-standard": "^37.0.0",
+    "stylelint-config-standard": "^38.0.0",
     "stylelint-prettier": "^5.0.0",
     "ts-jest": "^29.0.7",
     "ts-node": "^10.4.0",
