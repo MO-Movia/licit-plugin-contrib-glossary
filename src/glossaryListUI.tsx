@@ -101,7 +101,7 @@ export class GlossaryListUI extends React.PureComponent<
             <div></div>
             <div className="molcit-searchdiv">
               <table className="molcit-tableglossaries" id="myTable">
-                <thead style={{backgroundColor: 'lightgray'}}>
+                <thead className='glossary-thead'>
                   <tr className="molcit-glossaryrow">
                     <th className="molcit-glossaryheader"> {labelValue}</th>
                     <th className="molcit-glossaryheader">Description</th>

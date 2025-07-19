@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react",
     "target": "ES2022",
     "module": "esnext",
     "moduleResolution": "node",
@@ -29,8 +29,4 @@
   "include": [
     "src/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "**/*.test.ts"
-  ]
 }

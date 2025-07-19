@@ -40,7 +40,7 @@
 }
 
 .czi-editor-frameset .molcit-rowselected {
-  background: #eaeaea;
+  background: var(--czi-glossary-row-bg);
 }
 
 .czi-editor-frameset .molcit-glossaryrow.hover {
@@ -58,6 +58,12 @@
   border-width: 1px;
   height: 196px;
   overflow-x: auto;
+}
+
+.czi-editor-frameset .glossary-thead{
+  background-color: lightgrey;
+  color: black;
+
 }
 
 .czi-editor-frameset .molcit-tableglossaries {
