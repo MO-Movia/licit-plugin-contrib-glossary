@@ -31,7 +31,7 @@ describe('GlossaryPlugin', () => {
         marks: schema.spec.marks,
       });
       const effSchema = plugin.getEffectiveSchema(mySchema);
-      plugin.initButtonCommands();
+      plugin.initButtonCommands('dark');
       expect(effSchema.spec.nodes).toBeDefined();
     });
   });

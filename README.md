@@ -1,4 +1,5 @@
 # licit-plugin-contrib-glossary
+
 Glossary/Dictionary plugin - allows linking to a glossary/acronym/dictionary term, and when hovered over, displays the meaning/spelled out acronym/definition.
 
 ## Build
@@ -26,8 +27,6 @@ Include plugin in licit component
 import  GlossaryPlugin  from  '@modusoperandi/licit-glossary';
 
 const  plugins = [new  GlossaryPlugin()]
-
-ReactDOM.render(<Licit docID={0} plugins={plugins}/>
 
 
 ```

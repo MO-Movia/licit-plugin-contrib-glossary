@@ -1,37 +1,34 @@
-import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import {EditorState,TextSelection, NodeSelection, Transaction} from 'prosemirror-state';
-import {Transform} from 'prosemirror-transform';
-import {EditorView} from 'prosemirror-view';
-import {
-  AcronymItem,
-  GlossaryItem,
-  GlossaryRuntime,
-  IndexItem,
-  GLOSSARY,
-} from './types';
+import { UICommand } from '@modusoperandi/licit-doc-attrs-step'
+import { EditorState, TextSelection, Transaction } from 'prosemirror-state'
+import { Transform } from 'prosemirror-transform'
+import { EditorView } from 'prosemirror-view'
+import { AcronymItem, GlossaryItem, GlossaryRuntime, IndexItem, GLOSSARY } from './types'
 
 export class GlossaryCommand extends UICommand {
   constructor(private readonly runtime?: GlossaryRuntime) {
-    super();
+    super()
   }
 
-  isEnabled = (state: EditorState, view: EditorView): boolean => {
-    return this._isEnabled(state, view);
-  };
+  isEnabled = (state: EditorState, _view?: EditorView): boolean => {
+    return this.executeWithUserInput(state, undefined, _view, {
+      id: 'test',
+      term: 'test',
+    } as IndexItem)
+  }
 
-  getSelectedText(editorView: EditorView) {
-    let selectedText = '';
+  getSelectedText(editorView: EditorView): string {
+    let selectedText = ''
     editorView.state.tr.doc.nodesBetween(
       editorView.state.selection.from,
       editorView.state.selection.to,
       (node, _pos) => {
         if (node) {
-          selectedText = node.text ?? '';
+          selectedText = node.text ?? ''
         }
-        return true;
+        return true
       }
-    );
-    return selectedText;
+    )
+    return selectedText
   }
 
   waitForUserInput = (
@@ -43,8 +40,8 @@ export class GlossaryCommand extends UICommand {
       this.runtime?.glossaryService.openManagementDialog(
         state.doc.cut(state.selection.from, state.selection.to).textContent
       ) ?? Promise.resolve(undefined)
-    );
-  };
+    )
+  }
 
   executeWithUserInput = (
     state: EditorState,
@@ -53,49 +50,40 @@ export class GlossaryCommand extends UICommand {
     item?: IndexItem
   ): boolean => {
     if (!item?.term) {
-      return false;
+      return false
     }
     try {
-      const {selection} = state;
-      const {from, to} = selection;
+      const { selection } = state
+      const { from, to } = selection
 
       // Validate positions
-      if (
-        from >= 0 &&
-        to >= 0 &&
-        from < state.doc.content.size &&
-        to < state.doc.content.size
-      ) {
-        let transaction = this.createGlossaryAcronymNode(
-          state,
-          item,
-          !selection.empty
-        );
+      if (from >= 0 && to >= 0 && from < state.doc.content.size && to < state.doc.content.size) {
+        let transaction: Transaction = this.createGlossaryAcronymNode(state, item, !selection.empty)
         // Restore selection if needed
         if (!selection.empty) {
-          const newSelection = TextSelection.create(transaction.doc, from, to);
-          transaction = transaction.setSelection(newSelection);
+          const newSelection = TextSelection.create(transaction?.doc, from, to)
+          transaction = transaction?.setSelection(newSelection)
         }
-        dispatch?.(transaction);
-        return true;
+        dispatch?.(transaction)
+        return true
       }
     } catch {
       // can't do transaction. return false.
     }
 
-    return false;
-  };
+    return false
+  }
 
   cancel(): void {
-    return;
+    return
   }
 
   createGlossaryAcronymNode(
     state: EditorState,
     item: GlossaryItem | AcronymItem,
     replace: boolean
-  ) {
-    const glossaryacronymNode = state.schema.nodes[GLOSSARY];
+  ): Transaction {
+    const glossaryacronymNode = state.schema.nodes[GLOSSARY]
 
     const node = glossaryacronymNode.create(
       {
@@ -107,36 +95,29 @@ export class GlossaryCommand extends UICommand {
         description: item.description,
       },
       state.schema.text(item.term)
-    );
+    )
 
     if (replace) {
-      return state.tr.replaceSelectionWith(node);
+      return state.tr.replaceSelectionWith(node)
     } else {
-      return state.tr.insert(state.selection.to, node);
+      return state.tr.insert(state.selection.to, node)
     }
   }
 
   deleteGlossaryNode(state: EditorState, term: string): Transaction {
-    const node = state.schema.text(term);
-    return state.tr.replaceSelectionWith(node);
+    const node = state.schema.text(term)
+    return state.tr.replaceSelectionWith(node)
   }
 
-  _isEnabled = (state: EditorState, view?: EditorView): boolean => {
-    return (
-      view?.['runtime'] &&
-      'image' !== (state.tr.selection as NodeSelection)?.node?.type?.name
-    );
-  };
-
-  renderLabel() {
-    return null;
+  renderLabel(): unknown {
+    return null
   }
 
   isActive(): boolean {
-    return true;
+    return true
   }
 
   executeCustom(_state: EditorState, tr: Transform): Transform {
-    return tr;
+    return tr
   }
 }
