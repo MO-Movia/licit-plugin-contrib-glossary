@@ -7,7 +7,7 @@ export const cache: Record<
   string,
   Promise<IndexItem | undefined | null> | undefined
 > = {};
-export function updateCache(values?: CacheInput) {
+export function updateCache(values?: CacheInput): void {
   if (Array.isArray(values)) {
     for (const item of values) {
       cache[item.id] = Promise.resolve(item);
@@ -16,7 +16,6 @@ export function updateCache(values?: CacheInput) {
     values?.then((v) => updateCache(v)).catch(console.warn);
   }
 }
-
 export class GlossaryView implements NodeView {
   dom: globalThis.Node;
   contentDOM: HTMLElement;
@@ -39,7 +38,7 @@ export class GlossaryView implements NodeView {
     this.updateTooltip(outerView);
   }
 
-  private updateTooltip(view: EditorView) {
+  private updateTooltip(view: EditorView): void {
     const id = this.node.attrs.id as string;
     cache[id] ??= getGlossaryRuntime(view)?.glossaryService?.fetchTerm?.(id);
 
@@ -47,7 +46,7 @@ export class GlossaryView implements NodeView {
     cache[id]?.then((term) => this.setTooltip(term)).catch(console.warn);
   }
 
-  private setTooltip(term: IndexItem | undefined | null) {
+  private setTooltip(term: IndexItem | undefined | null): void {
     tippy(this.contentDOM, {
       content: term?.definition,
     });

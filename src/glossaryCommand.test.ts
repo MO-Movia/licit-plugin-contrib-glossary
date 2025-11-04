@@ -10,7 +10,11 @@ describe('GlossaryPlugin', () => {
   let plugin: GlossaryPlugin;
 
   const runtime = {
-    glossaryService: { openManagementDialog: () => { return Promise.resolve(null) } },
+    glossaryService: {
+      openManagementDialog: (): Promise<null> => {
+        return Promise.resolve(null);
+      },
+    },
   };
   beforeEach(() => {
     plugin = new GlossaryPlugin(runtime);

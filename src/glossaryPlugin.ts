@@ -9,7 +9,7 @@ import {GlossaryNodeSpec} from './glossaryNodeSpec';
 import {GlossaryView, updateCache} from './glossaryView';
 import {GLOSSARY_PLUGIN_KEY, GlossaryRuntime, GLOSSARY} from './types';
 import {GlossaryCommand} from './glossaryCommand';
-import { DarkThemeIcon, LightThemeIcon } from './images';
+import {DarkThemeIcon, LightThemeIcon} from './images';
 
 export const KEY_GLOSSARY = makeKeyMapWithCommon(
   GLOSSARY,
@@ -61,16 +61,12 @@ export class GlossaryPlugin extends Plugin<{runtime?: GlossaryRuntime}> {
     } else {
       image = LightThemeIcon;
     }
-      return {
-       [`[${image}] Insert Glossary/Acronym`]: new GlossaryCommand(this.runtime),
-              };
-    }
-   
+    return {
+      [`[${image}] Insert Glossary/Acronym`]: new GlossaryCommand(this.runtime),
+    };
+  }
 }
 
-function bindGlossaryView(
-  node: Node,
-  view: EditorView
-): GlossaryView {
+function bindGlossaryView(node: Node, view: EditorView): GlossaryView {
   return new GlossaryView(node, view);
 }

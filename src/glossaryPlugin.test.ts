@@ -17,7 +17,11 @@ class TestPlugin extends Plugin {
 describe('GlossaryPlugin', () => {
   let plugin: GlossaryPlugin;
   const runtime = {
-    glossaryService: {openManagementDialog: () => Promise.resolve(null)},
+    glossaryService: {
+      openManagementDialog: (): Promise<null> => {
+        return Promise.resolve(null);
+      },
+    },
   };
 
   beforeEach(() => {
