@@ -1,10 +1,16 @@
+/**
+ * @license MIT
+ * @copyright Copyright 2025 Modus Operandi Inc. All Rights Reserved.
+ */
+
 import {GlossaryCommand} from './glossaryCommand';
-import {GlossaryPlugin, IndexItem} from './index';
+import type {IndexItem} from './index';
+import {GlossaryPlugin} from './index';
 import {schema, builders} from 'prosemirror-test-builder';
 import {EditorState, TextSelection, NodeSelection} from 'prosemirror-state';
 import {Schema} from 'prosemirror-model';
 import {EditorView} from 'prosemirror-view';
-import {Transform} from 'prosemirror-transform';
+import type {Transform} from 'prosemirror-transform';
 
 describe('GlossaryPlugin', () => {
   let plugin: GlossaryPlugin;

@@ -1,5 +1,10 @@
+/**
+ * @license MIT
+ * @copyright Copyright 2025 Modus Operandi Inc. All Rights Reserved.
+ */
+
 import {PluginKey} from 'prosemirror-state';
-import {EditorView} from 'prosemirror-view';
+import type {EditorView} from 'prosemirror-view';
 
 export const GLOSSARY_PLUGIN_KEY = new PluginKey('GlossaryPlugin');
 export const GLOSSARY = 'glossary';

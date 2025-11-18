@@ -1,6 +1,13 @@
-import {DOMSerializer, Node} from 'prosemirror-model';
-import {EditorView, NodeView} from 'prosemirror-view';
-import {CacheInput, getGlossaryRuntime, GLOSSARY, IndexItem} from './types';
+/**
+ * @license MIT
+ * @copyright Copyright 2025 Modus Operandi Inc. All Rights Reserved.
+ */
+
+import type {Node} from 'prosemirror-model';
+import {DOMSerializer} from 'prosemirror-model';
+import type {EditorView, NodeView} from 'prosemirror-view';
+import type {CacheInput, IndexItem} from './types';
+import {getGlossaryRuntime, GLOSSARY} from './types';
 import tippy from 'tippy.js';
 
 export const cache: Record<
