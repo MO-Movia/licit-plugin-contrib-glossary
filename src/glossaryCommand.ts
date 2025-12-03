@@ -1,14 +1,20 @@
+/**
+ * @license MIT
+ * @copyright Copyright 2025 Modus Operandi Inc. All Rights Reserved.
+ */
+
 import {UICommand} from '@modusoperandi/licit-doc-attrs-step';
-import {EditorState, TextSelection, Transaction} from 'prosemirror-state';
-import {Transform} from 'prosemirror-transform';
-import {EditorView} from 'prosemirror-view';
-import {
+import type {EditorState, Transaction} from 'prosemirror-state';
+import {TextSelection} from 'prosemirror-state';
+import type {Transform} from 'prosemirror-transform';
+import type {EditorView} from 'prosemirror-view';
+import type {
   AcronymItem,
   GlossaryItem,
   GlossaryRuntime,
   IndexItem,
-  GLOSSARY,
 } from './types';
+import {GLOSSARY} from './types';
 
 export class GlossaryCommand extends UICommand {
   executeCustomStyleForTable(

@@ -1,10 +1,16 @@
-import {cache, GlossaryPlugin, IndexItem} from './index';
+/**
+ * @license MIT
+ * @copyright Copyright 2025 Modus Operandi Inc. All Rights Reserved.
+ */
+
+import type {IndexItem} from './index';
+import {cache, GlossaryPlugin} from './index';
 import {schema, builders} from 'prosemirror-test-builder';
 import {Schema} from 'prosemirror-model';
 import {EditorState, TextSelection, Plugin, PluginKey} from 'prosemirror-state';
 import {EditorView} from 'prosemirror-view';
 import {GlossaryCommand} from './glossaryCommand';
-import {Transform} from 'prosemirror-transform';
+import type {Transform} from 'prosemirror-transform';
 import {createEditor} from 'jest-prosemirror';
 
 class TestPlugin extends Plugin {

@@ -1,3 +1,8 @@
+/**
+ * @license MIT
+ * @copyright Copyright 2025 Modus Operandi Inc. All Rights Reserved.
+ */
+
 import type {Attrs, DOMOutputSpec, Node, NodeSpec} from 'prosemirror-model';
 import {GLOSSARY} from './types';
 

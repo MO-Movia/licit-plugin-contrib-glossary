@@ -1,3 +1,8 @@
+/**
+ * @license MIT
+ * @copyright Copyright 2025 Modus Operandi Inc. All Rights Reserved.
+ */
+
 import {GlossaryPlugin} from './index';
 import {schema, builders} from 'prosemirror-test-builder';
 import {EditorState} from 'prosemirror-state';
