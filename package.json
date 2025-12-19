@@ -11,8 +11,8 @@
     "url": "https://github.com/MO-Movia/licit-plugin-contrib-glossary"
   },
   "peerDependencies": {
-   "@modusoperandi/licit-doc-attrs-step": "file:modusoperandi-licit-doc-attrs-step-3.0.0.tgz",
-   "@modusoperandi/licit-ui-commands": "file:modusoperandi-licit-ui-commands-3.0.0.tgz",
+   "@modusoperandi/licit-doc-attrs-step": "^3.0.0",
+   "@modusoperandi/licit-ui-commands": "^3.0.0",
     "prosemirror-model": "^1.0.0",
     "prosemirror-state": "^1.0.0",
     "prosemirror-transform": "^1.0.0",
