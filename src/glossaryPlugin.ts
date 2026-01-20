@@ -64,9 +64,9 @@ export class GlossaryPlugin extends Plugin<{runtime?: GlossaryRuntime}> {
   initButtonCommands(theme: string): unknown {
     let image = null;
     if ('light' == theme) {
-      image = DarkThemeIcon;
+      image = LightThemeIcon;      
     } else {
-      image = LightThemeIcon;
+      image = DarkThemeIcon;
     }
     return {
       [`[${image}] Insert Glossary/Acronym`]: new GlossaryCommand(this.runtime),
