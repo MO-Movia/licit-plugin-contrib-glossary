@@ -143,7 +143,7 @@ export class GlossaryCommand extends UICommand {
   }
 
   isActive(): boolean {
-    return true;
+    return false;
   }
 
   executeCustom(_state: EditorState, tr: Transform): Transform {

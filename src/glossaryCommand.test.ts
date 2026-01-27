@@ -154,7 +154,7 @@ describe('GlossaryPlugin', () => {
 
   it('should be active', () => {
     const gm = new GlossaryCommand(runtime);
-    expect(gm.isActive()).toBeTruthy();
+    expect(gm.isActive()).toBeFalsy();
   });
 
   it('should execute custom', () => {
