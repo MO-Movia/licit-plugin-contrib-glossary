@@ -31,7 +31,7 @@ export interface GlossaryService {
     initialSearch: string
   ): Promise<IndexItem | null | undefined>;
 
-  fetchTerm?(id: string): Promise<IndexItem | null | undefined>;
+  fetchTerm?: (id: string) => Promise<IndexItem | null | undefined>;
 }
 export type CacheInput = IndexItem[] | Promise<IndexItem[]>;
 
